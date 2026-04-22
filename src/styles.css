@@ -19,6 +19,14 @@
  */
 
 @theme inline {
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-navy-deep: var(--brand-navy-deep);
+  --color-brand-green: var(--brand-green);
+  --color-brand-green-bright: var(--brand-green-bright);
+  --color-brand-amber: var(--brand-amber);
+  --color-brand-red: var(--brand-red);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -62,26 +70,47 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --radius: 0.875rem;
+  /* Chargeup brand: deep navy + electric green */
+  --background: oklch(0.985 0.005 220);
+  --foreground: oklch(0.22 0.06 240);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --card-foreground: oklch(0.22 0.06 240);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --popover-foreground: oklch(0.22 0.06 240);
+  --primary: oklch(0.27 0.07 240); /* deep navy #0F2C44 */
+  --primary-foreground: oklch(0.985 0.005 220);
+  --secondary: oklch(0.95 0.015 220);
+  --secondary-foreground: oklch(0.27 0.07 240);
+  --muted: oklch(0.955 0.01 220);
+  --muted-foreground: oklch(0.5 0.03 240);
+  --accent: oklch(0.65 0.18 145); /* electric green #22A04E */
+  --accent-foreground: oklch(0.99 0.005 145);
+  --destructive: oklch(0.6 0.22 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.9 0.015 220);
+  --input: oklch(0.92 0.015 220);
+  --ring: oklch(0.65 0.18 145);
+
+  /* Brand semantic tokens */
+  --brand-navy: oklch(0.27 0.07 240);
+  --brand-navy-deep: oklch(0.2 0.06 240);
+  --brand-green: oklch(0.65 0.18 145);
+  --brand-green-bright: oklch(0.72 0.2 145);
+  --brand-amber: oklch(0.78 0.16 75);
+  --brand-red: oklch(0.62 0.22 25);
+
+  --gradient-hero: linear-gradient(135deg, oklch(0.2 0.06 240) 0%, oklch(0.27 0.07 240) 50%, oklch(0.32 0.09 220) 100%);
+  --gradient-green: linear-gradient(135deg, oklch(0.65 0.18 145), oklch(0.72 0.2 145));
+  --gradient-leak: linear-gradient(135deg, oklch(0.62 0.22 25), oklch(0.7 0.2 45));
+  --gradient-card: linear-gradient(180deg, oklch(1 0 0) 0%, oklch(0.985 0.005 220) 100%);
+
+  --shadow-brand: 0 20px 50px -20px oklch(0.27 0.07 240 / 0.35);
+  --shadow-green: 0 16px 40px -16px oklch(0.65 0.18 145 / 0.5);
+  --shadow-card: 0 4px 24px -8px oklch(0.27 0.07 240 / 0.12);
+
+  --font-display: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -140,5 +169,45 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-display);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
   }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+@utility bg-gradient-hero {
+  background-image: var(--gradient-hero);
+}
+@utility bg-gradient-green {
+  background-image: var(--gradient-green);
+}
+@utility bg-gradient-leak {
+  background-image: var(--gradient-leak);
+}
+@utility shadow-brand {
+  box-shadow: var(--shadow-brand);
+}
+@utility shadow-green {
+  box-shadow: var(--shadow-green);
+}
+@utility shadow-card {
+  box-shadow: var(--shadow-card);
+}
+
+@keyframes pulse-leak {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.03); }
+}
+@utility animate-pulse-leak {
+  animation: pulse-leak 2.5s ease-in-out infinite;
+}
+
+@keyframes ticker {
+  from { background-position: 0 0; }
+  to { background-position: 24px 0; }
 }
