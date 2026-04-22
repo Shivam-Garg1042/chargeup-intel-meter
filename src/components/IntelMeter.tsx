@@ -9,15 +9,22 @@ import {
   Battery,
   Clock,
   Gauge,
-  ShieldCheck,
+  Smile,
   Sparkles,
   TrendingDown,
   Wallet,
-  Zap,
   ArrowRight,
   Activity,
   Wrench,
 } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { calculate, DEFAULTS, formatINR, type CalcInputs } from "@/lib/calc";
 import logo from "@/assets/chargeup-logo.png";
 
