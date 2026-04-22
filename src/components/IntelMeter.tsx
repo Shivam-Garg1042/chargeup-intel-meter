@@ -438,61 +438,94 @@ export default function IntelMeter() {
           </p>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          <MetricCard
-            icon={Wrench}
-            label="A. Labor Leak (Diagnostic)"
-            manualValue={`${inputs.manualRcaHours} hrs / fault`}
-            intelValue="5 min / fault"
-            leak={results.laborLeak}
-            tone="red"
-            formula="(faults × hrs × ₹/hr)"
-          />
-          <MetricCard
-            icon={Gauge}
-            label="B. Uptime Earnings Gap"
-            manualValue={`${results.manualUptimePct}% uptime`}
-            intelValue={`${results.chargeupUptimePct}% uptime`}
-            leak={results.uptimeLeak}
-            tone="amber"
-            formula="+4.3 days × ₹/day"
-          />
-          <MetricCard
-            icon={ShieldCheck}
-            label="C. Warranty Field-Blindness"
-            manualValue="Weeks of disputes"
-            intelValue="Seconds, auto-validated"
-            leak={results.warrantyLeak}
-            tone="navy"
-            formula="2% × battery value"
-          />
-          <MetricCard
-            icon={Wallet}
-            label="D. Resale / Devaluation"
-            manualValue="Standard market"
-            intelValue="+40% w/ Battery Passport"
-            leak={results.resaleLeak}
-            tone="navy"
-            formula="40% uplift / 5 yrs"
-          />
-          <MetricCard
-            icon={Zap}
-            label="E. Preventable Breakdowns"
-            manualValue="Reactive only"
-            intelValue="80% prevented (7–30d alerts)"
-            leak={results.preventedRepairValue}
-            tone="red"
-            formula="80% × repair value"
-          />
-          <MetricCard
-            icon={Sparkles}
-            label="F. Return on Assets Uplift"
-            manualValue="Standard RoA"
-            intelValue="+7% RoA on portfolio"
-            leak={results.annualRoaGain / 12}
-            tone="amber"
-            formula="7% × portfolio / 12"
-          />
+        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-[var(--brand-navy)]/5 hover:bg-[var(--brand-navy)]/5">
+                <TableHead className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-[var(--brand-navy)]">
+                  Standard Metric
+                </TableHead>
+                <TableHead className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-[var(--brand-red)]">
+                  Manual / Unmonitored Zone
+                </TableHead>
+                <TableHead className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-[var(--brand-green)]">
+                  Chargeup Intelligent Zone
+                </TableHead>
+                <TableHead className="px-6 py-5 text-right text-xs font-bold uppercase tracking-widest text-[var(--brand-red)]">
+                  Monthly Leak
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[
+                {
+                  icon: Wrench,
+                  metric: "Service Cost",
+                  sub: "Diagnostic + repair labor",
+                  manual: `${inputs.manualRcaHours} hrs RCA / fault · full reactive cost`,
+                  intel: "5-min RCA · 50% lower service cost",
+                  leak: results.laborLeak + results.preventedRepairValue,
+                },
+                {
+                  icon: Gauge,
+                  metric: "Uptime",
+                  sub: "Asset earning days",
+                  manual: `${results.manualUptimePct}% uptime · ~4.3 lost days/mo`,
+                  intel: `${results.chargeupUptimePct}% uptime · predictive alerts 7–30d ahead`,
+                  leak: results.uptimeLeak,
+                },
+                {
+                  icon: Smile,
+                  metric: "Customer Satisfaction",
+                  sub: "Warranty trust & disputes",
+                  manual: "Weeks of disputes · ~2% claims contested",
+                  intel: "Auto-validated in seconds via Digital Twin",
+                  leak: results.warrantyLeak,
+                },
+                {
+                  icon: Wallet,
+                  metric: "Resale Value",
+                  sub: "Battery Passport residual",
+                  manual: "Standard market · no verified history",
+                  intel: "+40% buyback uplift with Battery Passport",
+                  leak: results.resaleLeak,
+                },
+              ].map((row) => (
+                <TableRow key={row.metric} className="border-border">
+                  <TableCell className="px-6 py-5 align-top">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-navy)]/5 text-[var(--brand-navy)]">
+                        <row.icon className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <div className="text-base font-bold text-foreground">{row.metric}</div>
+                        <div className="text-xs text-muted-foreground">{row.sub}</div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="px-6 py-5 align-top">
+                    <div className="rounded-lg border border-dashed border-[var(--brand-red)]/30 bg-[var(--brand-red)]/5 px-3 py-2 text-sm font-medium text-foreground">
+                      {row.manual}
+                    </div>
+                  </TableCell>
+                  <TableCell className="px-6 py-5 align-top">
+                    <div className="rounded-lg border border-[var(--brand-green)]/30 bg-[var(--brand-green)]/8 px-3 py-2 text-sm font-medium text-foreground">
+                      {row.intel}
+                    </div>
+                  </TableCell>
+                  <TableCell className="px-6 py-5 text-right align-top">
+                    <div className="inline-flex items-center gap-1.5 rounded-full bg-[var(--brand-red)]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--brand-red)]">
+                      <TrendingDown className="h-3 w-3" /> Leak
+                    </div>
+                    <AnimatedNumber
+                      value={row.leak}
+                      className="mt-2 block font-mono text-2xl font-extrabold text-[var(--brand-red)]"
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </section>
 
