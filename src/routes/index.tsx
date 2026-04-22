@@ -1,26 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
+import IntelMeter from "@/components/IntelMeter";
 
 export const Route = createFileRoute("/")({
-  component: Index,
+  component: IntelMeter,
+  head: () => ({
+    meta: [
+      { title: "Chargeup Intel Meter — Battery OEM Loss Calculator" },
+      {
+        name: "description",
+        content:
+          "See exactly how much your unmonitored EV battery fleet is bleeding every month. Live ROI calculator backed by Chargeup's verified IoT benchmarks: 50% lower service cost, 99.3% uptime, 5-min RCA.",
+      },
+      { property: "og:title", content: "Chargeup Intel Meter — Battery OEM Loss Calculator" },
+      {
+        property: "og:description",
+        content:
+          "Quantify the financial leakage from manual battery management vs Chargeup's intelligent IoT platform.",
+      },
+      { property: "og:type", content: "website" },
+    ],
+  }),
 });
-
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
-
-function Index() {
-  return <PlaceholderIndex />;
-}
