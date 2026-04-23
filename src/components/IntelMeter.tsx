@@ -499,114 +499,101 @@ export default function IntelMeter() {
         </div>
       </section>
 
-      {/* FAULT INTELLIGENCE MINI METERS */}
+      {/* FAULT INTELLIGENCE — MASTER GAUGE + MINI METERS */}
       <section id="faults" className="border-t border-border bg-secondary/40">
         <div className="mx-auto max-w-7xl px-6 py-20">
-          <div className="mb-12 grid items-end gap-6 md:grid-cols-[1.4fr_1fr]">
-            <div>
-              <div className="text-xs font-bold uppercase tracking-widest text-[var(--brand-green)]">
-                Fault Intelligence • What Chargeup IoT sees that you don't
-              </div>
-              <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-foreground md:text-5xl">
-                Six silent killers — caught by Chargeup, missed by manual ops.
-              </h2>
-              <p className="mt-4 text-lg text-muted-foreground">
-                Every month our IoT layer surfaces these faults across your fleet.
-                Without it, most stay invisible until they become warranty claims, fires,
-                or dead packs in the field.
-              </p>
+          <div className="mb-10 max-w-3xl">
+            <div className="text-xs font-bold uppercase tracking-widest text-[var(--brand-green)]">
+              Fault Intelligence • What Chargeup IoT sees that you don't
             </div>
-            <div className="rounded-2xl border border-[var(--brand-navy)]/10 bg-card p-5 shadow-card">
-              <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Live exposure (this month)
-              </div>
-              <AnimatedNumber
-                value={results.faultMeters.reduce((s, m) => s + m.valueAtRisk, 0)}
-                className="mt-1 block font-mono text-3xl font-extrabold text-[var(--brand-red)]"
-              />
-              <div className="mt-1 text-xs text-muted-foreground">
-                Capital at risk from undetected faults
-              </div>
-            </div>
+            <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-foreground md:text-5xl">
+              Six silent killers — one master meter.
+            </h2>
+            <p className="mt-3 text-base text-muted-foreground">
+              Each fault below is invisible to manual ops. The needle on the right shows your
+              fleet's overall blind-spot exposure this month.
+            </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {results.faultMeters.map((m, i) => {
-              const Icon = [ShieldAlert, BatteryWarning, Flame, Battery, Cpu, Radio][i] ?? Eye;
-              const detectionPct =
-                m.detected > 0 ? Math.max(2, ((m.detected - m.missedByManual) / m.detected) * 100) : 0;
-              return (
-                <motion.div
-                  key={m.key}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                  className="group relative overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-card"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--brand-red)]/10 text-[var(--brand-red)]">
-                        <Icon className="h-5 w-5" />
+          <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+            {/* Mini meters — compact list */}
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-card">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-sm font-bold text-foreground">Fault mini-meters</h3>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Manual detection rate
+                </span>
+              </div>
+              <div className="divide-y divide-border">
+                {results.faultMeters.map((m, i) => {
+                  const Icon = [ShieldAlert, BatteryWarning, Flame, Battery, Cpu, Radio][i] ?? Eye;
+                  const manualPct =
+                    m.detected > 0 ? (m.missedByManual / m.detected) * 100 : 0;
+                  const manualDetectPct = Math.max(2, 100 - manualPct);
+                  return (
+                    <motion.div
+                      key={m.key}
+                      initial={{ opacity: 0, x: -8 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.04 }}
+                      className="flex items-center gap-3 py-3"
+                    >
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--brand-red)]/10 text-[var(--brand-red)]">
+                        <Icon className="h-4 w-4" />
                       </div>
-                      <div>
-                        <h4 className="text-sm font-bold text-foreground">{m.label}</h4>
-                        {m.sublabel && (
-                          <p className="text-[11px] text-muted-foreground">{m.sublabel}</p>
-                        )}
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <div className="truncate text-sm font-semibold text-foreground">
+                            {m.label}
+                          </div>
+                          <div className="font-mono text-[11px] font-bold text-muted-foreground">
+                            {Math.round(m.detected)}/mo
+                          </div>
+                        </div>
+                        <div className="mt-1.5 flex items-center gap-2">
+                          <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+                            <motion.div
+                              className="h-full rounded-full bg-gradient-to-r from-[var(--brand-red)] via-[var(--brand-amber)] to-[var(--brand-green)]"
+                              initial={false}
+                              animate={{ width: `${manualDetectPct}%` }}
+                              transition={{ type: "spring", stiffness: 80, damping: 18 }}
+                            />
+                          </div>
+                          <span className="w-10 text-right font-mono text-[10px] font-bold text-[var(--brand-red)]">
+                            {Math.round(manualDetectPct)}%
+                          </span>
+                          <AnimatedNumber
+                            value={m.valueAtRisk}
+                            className="w-20 text-right font-mono text-[11px] font-bold text-foreground"
+                          />
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+              <div className="mt-4 flex items-center justify-between rounded-lg bg-[var(--brand-red)]/8 px-3 py-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-red)]">
+                  Total value at risk this month
+                </span>
+                <AnimatedNumber
+                  value={results.faultMeters.reduce((s, m) => s + m.valueAtRisk, 0)}
+                  className="font-mono text-sm font-extrabold text-[var(--brand-red)]"
+                />
+              </div>
+            </div>
 
-                  <div className="mt-4 grid grid-cols-2 gap-2">
-                    <div className="rounded-lg bg-[var(--brand-green)]/8 p-2.5">
-                      <div className="text-[9px] font-bold uppercase tracking-wider text-[var(--brand-green)]">
-                        Chargeup detects
-                      </div>
-                      <div className="font-mono text-2xl font-extrabold text-foreground">
-                        {Math.round(m.detected)}
-                      </div>
-                      <div className="text-[10px] text-muted-foreground">/ month</div>
-                    </div>
-                    <div className="rounded-lg bg-[var(--brand-red)]/8 p-2.5">
-                      <div className="text-[9px] font-bold uppercase tracking-wider text-[var(--brand-red)]">
-                        Manual misses
-                      </div>
-                      <div className="font-mono text-2xl font-extrabold text-foreground">
-                        {Math.round(m.missedByManual)}
-                      </div>
-                      <div className="text-[10px] text-muted-foreground">/ month</div>
-                    </div>
-                  </div>
-
-                  {/* Detection bar */}
-                  <div className="mt-4">
-                    <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                      <span>Manual detection</span>
-                      <span className="text-foreground">{Math.round(100 - detectionPct)}%</span>
-                    </div>
-                    <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
-                      <motion.div
-                        className="h-full rounded-full bg-gradient-to-r from-[var(--brand-red)] to-[var(--brand-amber)]"
-                        initial={false}
-                        animate={{ width: `${100 - detectionPct}%` }}
-                        transition={{ type: "spring", stiffness: 80, damping: 18 }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                      Value at risk
-                    </span>
-                    <AnimatedNumber
-                      value={m.valueAtRisk}
-                      className="font-mono text-base font-extrabold text-[var(--brand-red)]"
-                    />
-                  </div>
-                </motion.div>
-              );
-            })}
+            {/* MASTER INTEL METER — needle gauge */}
+            <MasterIntelGauge
+              score={results.intelIndex}
+              label={results.intelTierLabel}
+              color={tierColor}
+              faults={results.faultMeters.length}
+              missed={Math.round(
+                results.faultMeters.reduce((s, m) => s + m.missedByManual, 0),
+              )}
+            />
           </div>
 
           {/* SoH Portfolio strip */}
