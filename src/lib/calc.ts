@@ -130,12 +130,20 @@ export function calculate(inputs: CalcInputs): CalcResults {
   const portfolioValue = inputs.totalBatteries * inputs.avgBatteryValue;
   const annualRoaGain = portfolioValue * BENCHMARKS.roaUpliftPct;
 
-  // Intel Index — based on inputs (lower is darker)
-  // Heuristic: higher manual hours + higher fault rate => lower score
-  const faultScore = Math.max(0, 40 - inputs.monthlyFaultRatePct * 3); // 0..40
-  const rcaScore = Math.max(0, 35 - inputs.manualRcaHours * 7); // 0..35
-  const baseIntel = 25; // assume some monitoring exists
-  const intelIndex = Math.round(Math.min(100, Math.max(0, faultScore + rcaScore + baseIntel - 25)));
+  // Intel Index — fully dynamic, reacts to every input
+  // Score breakdown (max 100):
+  //   Fault rate (0-30): lower fault% = higher score
+  //   RCA speed (0-25): faster manual diagnosis = higher score
+  //   Fleet scale visibility (0-15): bigger unmonitored fleets = lower score
+  //   Asset value at risk (0-15): higher value batteries unmonitored = lower score
+  //   Revenue exposure (0-15): higher daily revenue at risk = lower score
+  const faultScore = Math.max(0, 30 - (inputs.monthlyFaultRatePct - 1) * 2.5);
+  const rcaScore = Math.max(0, 25 - inputs.manualRcaHours * 4.5);
+  const scaleScore = Math.max(0, 15 - Math.log10(Math.max(50, inputs.totalBatteries)) * 3.5);
+  const assetScore = Math.max(0, 15 - (inputs.avgBatteryValue / 200000) * 15);
+  const revenueScore = Math.max(0, 15 - (inputs.dailyRevenuePerAsset / 2000) * 15);
+  const rawIndex = faultScore + rcaScore + scaleScore + assetScore + revenueScore;
+  const intelIndex = Math.round(Math.min(100, Math.max(0, rawIndex)));
 
   let intelTier: CalcResults["intelTier"] = "dark";
   let intelTierLabel = "The Dark Zone";
@@ -146,6 +154,40 @@ export function calculate(inputs: CalcInputs): CalcResults {
     intelTier = "fragmented";
     intelTierLabel = "Fragmented Data";
   }
+
+  // Fault Intelligence Mini-Meters
+  // Distribution of monthly faults across the 6 fault classes Chargeup IoT detects.
+  // Manual ops typically catches only a fraction; the rest become warranty disputes,
+  // breakdowns, fires, or silent capacity loss.
+  const fm = (
+    key: string,
+    label: string,
+    sublabel: string,
+    sharePct: number,
+    manualDetectionPct: number,
+    severityFactor: number,
+  ) => {
+    const detected = faultsPerMonth * sharePct;
+    const missedByManual = detected * (1 - manualDetectionPct);
+    const valueAtRisk = missedByManual * inputs.avgBatteryValue * severityFactor;
+    return { key, label, sublabel, detected, missedByManual, valueAtRisk };
+  };
+
+  const faultMeters = [
+    fm("warranty", "Warranty Violations", "Customer abuse / out-of-spec usage", 0.18, 0.05, 0.45),
+    fm("deepDischarge", "Deep Discharge Events", "Capacity-killing over-drain", 0.16, 0.1, 0.18),
+    fm("thermal", "Thermal Alerts", "Overheating → fire risk", 0.12, 0.08, 0.6),
+    fm("cellImbalance", "Cell Imbalance", "Early-warning of pack failure", 0.22, 0.05, 0.15),
+    fm("bms", "BMS Faults", "Brain of the battery misbehaving", 0.18, 0.15, 0.25),
+    fm("sensor", "Sensor Faults (NTC / Voltage)", "Blind instrumentation", 0.14, 0.1, 0.12),
+  ];
+
+  // SoH portfolio split — Chargeup-style benchmark from the user's screenshot
+  const sohSplit = {
+    healthy: Math.round(inputs.totalBatteries * 0.56),
+    moderate: Math.round(inputs.totalBatteries * 0.27),
+    atRisk: Math.round(inputs.totalBatteries * 0.17),
+  };
 
   return {
     manualRcaCost,
@@ -172,6 +214,8 @@ export function calculate(inputs: CalcInputs): CalcResults {
     intelIndex,
     intelTier,
     intelTierLabel,
+    faultMeters,
+    sohSplit,
   };
 }
 
