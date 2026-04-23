@@ -174,87 +174,95 @@ function MetricCard({
   );
 }
 
-function NeedleGauge({ score }: { score: number }) {
-  // Needle rotates from -90deg (score 0) to +90deg (score 100)
-  const angle = -90 + (Math.min(100, Math.max(0, score)) / 100) * 180;
-  const spring = useSpring(angle, { stiffness: 80, damping: 14 });
-  useEffect(() => {
-    spring.set(angle);
-  }, [angle, spring]);
-  // SVG <g> needs the `transform` attribute, not CSS transform — use it directly.
-  const transform = useTransform(spring, (v) => `rotate(${v} 100 110)`);
+function CircularIntelGauge({
+  score,
+  tierLabel,
+  tierColor,
+}: {
+  score: number;
+  tierLabel: string;
+  tierColor: string;
+}) {
+  const clamped = Math.min(100, Math.max(0, score));
+  const R = 90;
+  const C = 2 * Math.PI * R; // circumference
 
-  const polarToCartesian = (cx: number, cy: number, r: number, deg: number) => {
-    const rad = ((deg - 90) * Math.PI) / 180;
-    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
-  };
-  const arcPath = (startDeg: number, endDeg: number, r = 84) => {
-    const start = polarToCartesian(100, 110, r, endDeg);
-    const end = polarToCartesian(100, 110, r, startDeg);
-    const large = endDeg - startDeg <= 180 ? 0 : 1;
-    return `M ${start.x} ${start.y} A ${r} ${r} 0 ${large} 0 ${end.x} ${end.y}`;
-  };
+  // Animated stroke offset (ring fill)
+  const target = useMotionValue(clamped);
+  const spring = useSpring(target, { stiffness: 80, damping: 18 });
+  useEffect(() => {
+    target.set(clamped);
+  }, [clamped, target]);
+  const dashOffset = useTransform(spring, (v) => C - (v / 100) * C);
+
+  // Stroke color reacts to score
+  const stroke =
+    clamped >= 70
+      ? "var(--brand-green-bright)"
+      : clamped >= 40
+        ? "var(--brand-amber)"
+        : "var(--brand-red)";
 
   return (
-    <div className="relative mx-auto mt-4 w-full max-w-[320px]">
-      <svg viewBox="0 0 200 130" className="h-auto w-full">
-        <path
-          d={arcPath(-90, 90)}
-          stroke="rgba(255,255,255,0.1)"
-          strokeWidth="14"
+    <div className="relative mx-auto mt-2 aspect-square w-full max-w-[260px]">
+      <svg viewBox="0 0 220 220" className="h-full w-full -rotate-90">
+        {/* Track */}
+        <circle
+          cx="110"
+          cy="110"
+          r={R}
           fill="none"
-          strokeLinecap="round"
+          stroke="rgba(255,255,255,0.08)"
+          strokeWidth="16"
         />
-        <path
-          d={arcPath(-90, -30)}
-          stroke="var(--brand-red)"
-          strokeWidth="14"
+        {/* Glow under-ring */}
+        <motion.circle
+          cx="110"
+          cy="110"
+          r={R}
           fill="none"
+          stroke={stroke}
+          strokeWidth="22"
           strokeLinecap="round"
-          opacity="0.95"
+          strokeDasharray={C}
+          strokeDashoffset={dashOffset}
+          opacity={0.18}
+          style={{ filter: "blur(6px)" }}
         />
-        <path
-          d={arcPath(-30, 30)}
-          stroke="var(--brand-amber)"
-          strokeWidth="14"
+        {/* Active ring */}
+        <motion.circle
+          cx="110"
+          cy="110"
+          r={R}
           fill="none"
+          stroke={stroke}
+          strokeWidth="16"
           strokeLinecap="round"
-          opacity="0.95"
+          strokeDasharray={C}
+          strokeDashoffset={dashOffset}
         />
-        <path
-          d={arcPath(30, 90)}
-          stroke="var(--brand-green-bright)"
-          strokeWidth="14"
-          fill="none"
-          strokeLinecap="round"
-          opacity="0.95"
-        />
-
-        <text x="14" y="125" fontSize="9" fontFamily="monospace" fill="rgba(255,255,255,0.6)">
-          0
-        </text>
-        <text x="92" y="20" fontSize="9" fontFamily="monospace" fill="rgba(255,255,255,0.6)">
-          50
-        </text>
-        <text x="172" y="125" fontSize="9" fontFamily="monospace" fill="rgba(255,255,255,0.6)">
-          100
-        </text>
-
-        <motion.g transform={transform}>
-          <line
-            x1="100"
-            y1="110"
-            x2="100"
-            y2="32"
-            stroke="white"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-          />
-          <polygon points="100,28 96,38 104,38" fill="var(--brand-green-bright)" />
-        </motion.g>
-        <circle cx="100" cy="110" r="8" fill="white" />
-        <circle cx="100" cy="110" r="4" fill="var(--brand-navy-deep)" />
       </svg>
+
+      {/* Center content (not rotated) */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+        <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">
+          Intel Index
+        </div>
+        <AnimatedNumber
+          value={clamped}
+          format={(v) => Math.round(v).toString()}
+          className="font-mono text-6xl font-extrabold leading-none text-white"
+        />
+        <div className="mt-1 text-[10px] font-semibold uppercase tracking-widest text-white/50">
+          / 100
+        </div>
+        <div
+          className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold"
+          style={{ backgroundColor: tierColor, color: "#0F2C44" }}
+        >
+          {tierLabel}
+        </div>
+      </div>
     </div>
   );
 }
