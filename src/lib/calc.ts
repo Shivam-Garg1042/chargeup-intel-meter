@@ -1,6 +1,14 @@
 // Battery OEM Intel Meter — calculation engine
 // All monetary values in INR.
 
+export type FaultKey =
+  | "warranty"
+  | "deepDischarge"
+  | "thermal"
+  | "cellImbalance"
+  | "bms"
+  | "sensor";
+
 export interface CalcInputs {
   totalBatteries: number;
   monthlyFaultRatePct: number; // % of fleet faulting per month
@@ -8,6 +16,8 @@ export interface CalcInputs {
   hourlyTechnicianRate: number; // INR / hour
   avgBatteryValue: number; // INR replacement cost
   dailyRevenuePerAsset: number; // INR / day per running asset
+  // Per-fault manual detection rate override (0..100, %). When omitted, defaults are used.
+  faultManualDetectionPct?: Partial<Record<FaultKey, number>>;
 }
 
 export interface CalcResults {
