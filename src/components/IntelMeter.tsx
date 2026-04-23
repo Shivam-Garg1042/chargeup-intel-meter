@@ -8,7 +8,11 @@ import {
   AlertTriangle,
   Battery,
   Clock,
+  Cpu,
+  Eye,
+  Flame,
   Gauge,
+  ShieldAlert,
   ShieldCheck,
   Sparkles,
   TrendingDown,
@@ -17,6 +21,8 @@ import {
   ArrowRight,
   Activity,
   Wrench,
+  BatteryWarning,
+  Radio,
 } from "lucide-react";
 import { calculate, DEFAULTS, formatINR, type CalcInputs } from "@/lib/calc";
 import logo from "@/assets/chargeup-logo.png";
