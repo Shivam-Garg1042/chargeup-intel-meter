@@ -353,8 +353,64 @@ export default function IntelMeter() {
             </p>
           </motion.div>
 
+          {/* SIX SILENT KILLERS — ABOVE CALCULATOR (compact horizontal strip) */}
+          <div id="faults" className="mt-12 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl lg:mt-16">
+            <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--brand-green-bright)]">
+                  Six Silent Killers
+                </div>
+                <h3 className="mt-1 text-lg font-bold text-white">
+                  Drag each fault to match what manual ops actually catches today
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={resetFaultDetection}
+                className="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-white/80 transition hover:bg-white/10"
+              >
+                Reset baseline
+              </button>
+            </div>
+
+            <div className="grid gap-x-6 gap-y-3 md:grid-cols-2 lg:grid-cols-3">
+              {results.faultMeters.map((m, i) => {
+                const Icon = [ShieldAlert, BatteryWarning, Flame, Battery, Cpu, Radio][i] ?? Eye;
+                return (
+                  <div key={m.key} className="flex items-center gap-3 py-1.5">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--brand-red)]/15 text-[var(--brand-red)] ring-1 ring-[var(--brand-red)]/30">
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <div className="truncate text-xs font-semibold text-white">{m.label}</div>
+                        <span className="font-mono text-[10px] font-bold text-white">
+                          {Math.round(m.manualDetectionPct)}%
+                        </span>
+                      </div>
+                      <div className="mt-1 flex items-center gap-2">
+                        <Slider
+                          value={[m.manualDetectionPct]}
+                          min={0}
+                          max={100}
+                          step={1}
+                          onValueChange={(v) => updateFaultDetection(m.key, v[0])}
+                          className="flex-1 [&_[data-slot=slider-track]]:h-1 [&_[data-slot=slider-track]]:bg-white/15 [&_[data-slot=slider-range]]:bg-gradient-to-r [&_[data-slot=slider-range]]:from-[var(--brand-red)] [&_[data-slot=slider-range]]:via-[var(--brand-amber)] [&_[data-slot=slider-range]]:to-[var(--brand-green-bright)] [&_[data-slot=slider-thumb]]:h-3 [&_[data-slot=slider-thumb]]:w-3 [&_[data-slot=slider-thumb]]:border-white [&_[data-slot=slider-thumb]]:bg-white"
+                        />
+                        <AnimatedNumber
+                          value={m.valueAtRisk}
+                          className="w-16 shrink-0 text-right font-mono text-[10px] font-bold text-[var(--brand-red)]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           {/* CALCULATOR + BIG REVEAL */}
-          <div id="calculator" className="mt-12 grid gap-6 lg:mt-16 lg:grid-cols-[1.1fr_1fr]">
+          <div id="calculator" className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_1fr]">
             {/* Inputs panel */}
             <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl md:p-8">
               <div className="flex items-center justify-between">
