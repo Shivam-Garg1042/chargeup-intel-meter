@@ -721,24 +721,11 @@ export default function IntelMeter() {
                 <Activity className="h-4 w-4 text-[var(--brand-green-bright)]" />
               </div>
 
-              <NeedleGauge score={results.intelIndex} />
-
-              <div className="mt-2 text-center">
-                <AnimatedNumber
-                  value={results.intelIndex}
-                  format={(v) => Math.round(v).toString()}
-                  className="font-mono text-6xl font-extrabold text-white"
-                />
-                <div className="text-[10px] font-semibold uppercase tracking-widest text-white/60">
-                  / 100 Intel Index
-                </div>
-                <div
-                  className="mt-3 inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold"
-                  style={{ backgroundColor: tierColor, color: "#0F2C44" }}
-                >
-                  {results.intelTierLabel}
-                </div>
-              </div>
+              <CircularIntelGauge
+                score={results.intelIndex}
+                tierLabel={results.intelTierLabel}
+                tierColor={tierColor}
+              />
 
               <div className="mt-5 grid grid-cols-3 gap-2 border-t border-white/10 pt-4 text-center">
                 <div>
