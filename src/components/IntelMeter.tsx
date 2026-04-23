@@ -8,7 +8,11 @@ import {
   AlertTriangle,
   Battery,
   Clock,
+  Cpu,
+  Eye,
+  Flame,
   Gauge,
+  ShieldAlert,
   ShieldCheck,
   Sparkles,
   TrendingDown,
@@ -17,6 +21,8 @@ import {
   ArrowRight,
   Activity,
   Wrench,
+  BatteryWarning,
+  Radio,
 } from "lucide-react";
 import { calculate, DEFAULTS, formatINR, type CalcInputs } from "@/lib/calc";
 import logo from "@/assets/chargeup-logo.png";
@@ -197,6 +203,9 @@ export default function IntelMeter() {
             <a href="#breakdown" className="hover:text-[var(--brand-green)]">
               Loss Breakdown
             </a>
+            <a href="#faults" className="hover:text-[var(--brand-green)]">
+              Fault Intel
+            </a>
             <a href="#index" className="hover:text-[var(--brand-green)]">
               Intel Index
             </a>
@@ -229,15 +238,16 @@ export default function IntelMeter() {
               <Activity className="h-3.5 w-3.5" /> Battery OEM Intel Meter
             </div>
             <h1 className="mt-6 text-5xl font-extrabold leading-[1.05] tracking-tight md:text-7xl">
-              You're not selling Electric Vehicles.
+              Without Chargeup IoT,
               <br />
               <span className="bg-gradient-to-r from-[var(--brand-green-bright)] to-white bg-clip-text text-transparent">
-                You're bleeding intelligence.
+                you don't sell batteries — you ship blind spots.
               </span>
             </h1>
             <p className="mt-6 max-w-2xl text-lg text-white/70 md:text-xl">
-              Every unmonitored battery in your fleet is a silent leak — labor, uptime, warranty
-              and resale value lost every single day. Move two sliders and see the damage.
+              Every battery you ship without intelligence becomes a warranty risk, a thermal
+              event waiting to happen, a customer churn trigger. See — in rupees — what your
+              fleet is bleeding every month because it can't talk back.
             </p>
           </motion.div>
 
@@ -489,7 +499,184 @@ export default function IntelMeter() {
         </div>
       </section>
 
-      {/* INTEL INDEX */}
+      {/* FAULT INTELLIGENCE MINI METERS */}
+      <section id="faults" className="border-t border-border bg-secondary/40">
+        <div className="mx-auto max-w-7xl px-6 py-20">
+          <div className="mb-12 grid items-end gap-6 md:grid-cols-[1.4fr_1fr]">
+            <div>
+              <div className="text-xs font-bold uppercase tracking-widest text-[var(--brand-green)]">
+                Fault Intelligence • What Chargeup IoT sees that you don't
+              </div>
+              <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-foreground md:text-5xl">
+                Six silent killers — caught by Chargeup, missed by manual ops.
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                Every month our IoT layer surfaces these faults across your fleet.
+                Without it, most stay invisible until they become warranty claims, fires,
+                or dead packs in the field.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-[var(--brand-navy)]/10 bg-card p-5 shadow-card">
+              <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Live exposure (this month)
+              </div>
+              <AnimatedNumber
+                value={results.faultMeters.reduce((s, m) => s + m.valueAtRisk, 0)}
+                className="mt-1 block font-mono text-3xl font-extrabold text-[var(--brand-red)]"
+              />
+              <div className="mt-1 text-xs text-muted-foreground">
+                Capital at risk from undetected faults
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {results.faultMeters.map((m, i) => {
+              const Icon = [ShieldAlert, BatteryWarning, Flame, Battery, Cpu, Radio][i] ?? Eye;
+              const detectionPct =
+                m.detected > 0 ? Math.max(2, ((m.detected - m.missedByManual) / m.detected) * 100) : 0;
+              return (
+                <motion.div
+                  key={m.key}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="group relative overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-card"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--brand-red)]/10 text-[var(--brand-red)]">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-foreground">{m.label}</h4>
+                        {m.sublabel && (
+                          <p className="text-[11px] text-muted-foreground">{m.sublabel}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-2 gap-2">
+                    <div className="rounded-lg bg-[var(--brand-green)]/8 p-2.5">
+                      <div className="text-[9px] font-bold uppercase tracking-wider text-[var(--brand-green)]">
+                        Chargeup detects
+                      </div>
+                      <div className="font-mono text-2xl font-extrabold text-foreground">
+                        {Math.round(m.detected)}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground">/ month</div>
+                    </div>
+                    <div className="rounded-lg bg-[var(--brand-red)]/8 p-2.5">
+                      <div className="text-[9px] font-bold uppercase tracking-wider text-[var(--brand-red)]">
+                        Manual misses
+                      </div>
+                      <div className="font-mono text-2xl font-extrabold text-foreground">
+                        {Math.round(m.missedByManual)}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground">/ month</div>
+                    </div>
+                  </div>
+
+                  {/* Detection bar */}
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      <span>Manual detection</span>
+                      <span className="text-foreground">{Math.round(100 - detectionPct)}%</span>
+                    </div>
+                    <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
+                      <motion.div
+                        className="h-full rounded-full bg-gradient-to-r from-[var(--brand-red)] to-[var(--brand-amber)]"
+                        initial={false}
+                        animate={{ width: `${100 - detectionPct}%` }}
+                        transition={{ type: "spring", stiffness: 80, damping: 18 }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      Value at risk
+                    </span>
+                    <AnimatedNumber
+                      value={m.valueAtRisk}
+                      className="font-mono text-base font-extrabold text-[var(--brand-red)]"
+                    />
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* SoH Portfolio strip */}
+          <div className="mt-10 overflow-hidden rounded-2xl border border-border bg-card shadow-card">
+            <div className="flex flex-col items-start justify-between gap-4 border-b border-border p-5 md:flex-row md:items-center">
+              <div>
+                <div className="text-xs font-bold uppercase tracking-wider text-[var(--brand-navy)]">
+                  Battery Performance — State of Health
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  What a Chargeup Battery Passport reveals across your{" "}
+                  {inputs.totalBatteries.toLocaleString("en-IN")}-unit fleet.
+                </p>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Without IoT, you don't know which bucket each battery is in.
+              </div>
+            </div>
+            <div className="grid divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0">
+              {[
+                {
+                  label: "Healthy SoH",
+                  range: ">95%",
+                  count: results.sohSplit.healthy,
+                  pct: 56,
+                  color: "var(--brand-green)",
+                },
+                {
+                  label: "Moderate SoH",
+                  range: "85–95%",
+                  count: results.sohSplit.moderate,
+                  pct: 27,
+                  color: "var(--brand-navy)",
+                },
+                {
+                  label: "At Risk",
+                  range: "<85%",
+                  count: results.sohSplit.atRisk,
+                  pct: 17,
+                  color: "var(--brand-red)",
+                },
+              ].map((s) => (
+                <div key={s.label} className="p-5">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ backgroundColor: s.color }}
+                    />
+                    <span className="text-sm font-bold text-foreground">{s.label}</span>
+                    <span className="text-xs text-muted-foreground">({s.range})</span>
+                  </div>
+                  <div className="mt-2 flex items-baseline gap-2">
+                    <span className="font-mono text-3xl font-extrabold text-foreground">
+                      {s.count.toLocaleString("en-IN")}
+                    </span>
+                    <span className="text-sm text-muted-foreground">{s.pct}%</span>
+                  </div>
+                  <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full"
+                      style={{ width: `${s.pct}%`, backgroundColor: s.color }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="index" className="bg-gradient-hero py-20 text-white">
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-[1fr_1.2fr]">
           <div>
