@@ -24,7 +24,7 @@ import {
   BatteryWarning,
   Radio,
 } from "lucide-react";
-import { calculate, DEFAULTS, formatINR, type CalcInputs } from "@/lib/calc";
+import { calculate, DEFAULTS, formatINR, type CalcInputs, type FaultKey } from "@/lib/calc";
 import logo from "@/assets/chargeup-logo.png";
 
 function AnimatedNumber({
