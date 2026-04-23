@@ -177,11 +177,12 @@ function MetricCard({
 function NeedleGauge({ score }: { score: number }) {
   // Needle rotates from -90deg (score 0) to +90deg (score 100)
   const angle = -90 + (Math.min(100, Math.max(0, score)) / 100) * 180;
-  const spring = useSpring(angle, { stiffness: 60, damping: 14 });
+  const spring = useSpring(angle, { stiffness: 80, damping: 14 });
   useEffect(() => {
     spring.set(angle);
   }, [angle, spring]);
-  const rotate = useTransform(spring, (v) => `rotate(${v}deg)`);
+  // SVG <g> needs the `transform` attribute, not CSS transform — use it directly.
+  const transform = useTransform(spring, (v) => `rotate(${v} 100 110)`);
 
   const polarToCartesian = (cx: number, cy: number, r: number, deg: number) => {
     const rad = ((deg - 90) * Math.PI) / 180;
@@ -239,7 +240,7 @@ function NeedleGauge({ score }: { score: number }) {
           100
         </text>
 
-        <motion.g style={{ originX: "100px", originY: "110px", rotate }}>
+        <motion.g transform={transform}>
           <line
             x1="100"
             y1="110"
