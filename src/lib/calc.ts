@@ -50,6 +50,23 @@ export interface CalcResults {
   intelIndex: number;
   intelTier: "dark" | "fragmented" | "leader";
   intelTierLabel: string;
+
+  // Fault Intelligence Mini-Meters (what Chargeup IoT detects that manual ops misses)
+  faultMeters: {
+    key: string;
+    label: string;
+    sublabel?: string;
+    detected: number; // count per month detected by Chargeup IoT
+    missedByManual: number; // count per month invisible to manual ops
+    valueAtRisk: number; // monthly INR exposure
+  }[];
+
+  // SoH (State of Health) portfolio split — what a Battery Passport reveals
+  sohSplit: {
+    healthy: number; // >95%
+    moderate: number; // 85-95%
+    atRisk: number; // <85%
+  };
 }
 
 export const DEFAULTS: CalcInputs = {
