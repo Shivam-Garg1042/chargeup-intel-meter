@@ -556,6 +556,81 @@ export default function IntelMeter() {
               </div>
             </motion.div>
           </div>
+
+          {/* MASTER INTEL METER — BELOW CALCULATOR */}
+          <div id="index" className="mt-8 grid gap-6 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl lg:grid-cols-[auto_1fr] lg:items-center">
+            <div className="flex flex-col items-center">
+              <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-[var(--brand-green-bright)]">
+                Master Intel Meter
+              </div>
+              <CircularIntelGauge
+                score={results.intelIndex}
+                tierLabel={results.intelTierLabel}
+                tierColor={tierColor}
+              />
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-xl font-bold text-white">
+                  Your fleet's intelligence score, live.
+                </h3>
+                <p className="mt-1 text-sm text-white/70">
+                  Every slider — fleet inputs above and the six fault meters — feeds this single
+                  number. Higher = more visibility, lower bleed, stronger Return on Assets.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                  <div className="text-[9px] font-bold uppercase tracking-wider text-white/60">
+                    Faults missed/mo
+                  </div>
+                  <div className="mt-1 font-mono text-xl font-extrabold text-[var(--brand-red)]">
+                    {Math.round(results.faultMeters.reduce((s, m) => s + m.missedByManual, 0))}
+                  </div>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                  <div className="text-[9px] font-bold uppercase tracking-wider text-white/60">
+                    Prevented/mo with IoT
+                  </div>
+                  <div className="mt-1 font-mono text-xl font-extrabold text-[var(--brand-green-bright)]">
+                    {Math.round(results.preventedFaultsPerMonth)}
+                  </div>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                  <div className="text-[9px] font-bold uppercase tracking-wider text-white/60">
+                    RoA gain/yr
+                  </div>
+                  <div className="mt-1 font-mono text-base font-extrabold text-white">
+                    {formatINR(results.annualRoaGain, { compact: true })}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { range: "70–100", label: "Fi-Ne-Tech Leader", color: "var(--brand-green)" },
+                  { range: "40–69", label: "Fragmented Data", color: "var(--brand-amber)" },
+                  { range: "0–39", label: "The Dark Zone", color: "var(--brand-red)" },
+                ].map((t) => (
+                  <div
+                    key={t.label}
+                    className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 p-2"
+                  >
+                    <span
+                      className="h-2 w-2 shrink-0 rounded-full"
+                      style={{ backgroundColor: t.color }}
+                    />
+                    <div className="min-w-0">
+                      <div className="font-mono text-[10px] font-bold text-white">{t.range}</div>
+                      <div className="truncate text-[10px] text-white/70">{t.label}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
