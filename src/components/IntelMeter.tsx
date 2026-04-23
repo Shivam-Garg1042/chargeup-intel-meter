@@ -240,7 +240,7 @@ function NeedleGauge({ score }: { score: number }) {
           100
         </text>
 
-        <motion.g style={{ originX: "100px", originY: "110px", rotate }}>
+        <motion.g transform={transform}>
           <line
             x1="100"
             y1="110"
