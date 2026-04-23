@@ -115,11 +115,7 @@ function MetricCard({
   formula?: string;
 }) {
   const toneRing =
-    tone === "red"
-      ? "ring-[var(--brand-red)]/30"
-      : tone === "amber"
-        ? "ring-[var(--brand-amber)]/30"
-        : "ring-border";
+    tone === "red" ? "ring-[var(--brand-red)]/30" : tone === "amber" ? "ring-[var(--brand-amber)]/30" : "ring-border";
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -141,28 +137,19 @@ function MetricCard({
 
       <div className="mt-5 grid grid-cols-2 gap-3">
         <div className="rounded-xl border border-dashed border-[var(--brand-red)]/30 bg-[var(--brand-red)]/5 p-3">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-red)]/80">
-            Manual
-          </div>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-red)]/80">Manual</div>
           <div className="mt-1 font-mono text-sm font-bold text-foreground">{manualValue}</div>
         </div>
         <div className="rounded-xl border border-[var(--brand-green)]/30 bg-[var(--brand-green)]/8 p-3">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-green)]">
-            Chargeup
-          </div>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-green)]">Chargeup</div>
           <div className="mt-1 font-mono text-sm font-bold text-foreground">{intelValue}</div>
         </div>
       </div>
 
       <div className="mt-5 flex items-end justify-between gap-3 border-t border-border pt-4">
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            Monthly bleed
-          </div>
-          <AnimatedNumber
-            value={leak}
-            className="font-mono text-2xl font-extrabold text-[var(--brand-red)]"
-          />
+          <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Monthly bleed</div>
+          <AnimatedNumber value={leak} className="font-mono text-2xl font-extrabold text-[var(--brand-red)]" />
         </div>
         {formula && (
           <code className="hidden max-w-[55%] rounded-md bg-muted px-2 py-1 text-[10px] font-medium text-muted-foreground sm:block">
@@ -174,15 +161,7 @@ function MetricCard({
   );
 }
 
-function CircularIntelGauge({
-  score,
-  tierLabel,
-  tierColor,
-}: {
-  score: number;
-  tierLabel: string;
-  tierColor: string;
-}) {
+function CircularIntelGauge({ score, tierLabel, tierColor }: { score: number; tierLabel: string; tierColor: string }) {
   const clamped = Math.min(100, Math.max(0, score));
   const R = 90;
   const C = 2 * Math.PI * R; // circumference
@@ -197,24 +176,13 @@ function CircularIntelGauge({
 
   // Stroke color reacts to score
   const stroke =
-    clamped >= 70
-      ? "var(--brand-green-bright)"
-      : clamped >= 40
-        ? "var(--brand-amber)"
-        : "var(--brand-red)";
+    clamped >= 70 ? "var(--brand-green-bright)" : clamped >= 40 ? "var(--brand-amber)" : "var(--brand-red)";
 
   return (
     <div className="relative mx-auto mt-2 aspect-square w-full max-w-[260px]">
       <svg viewBox="0 0 220 220" className="h-full w-full -rotate-90">
         {/* Track */}
-        <circle
-          cx="110"
-          cy="110"
-          r={R}
-          fill="none"
-          stroke="rgba(255,255,255,0.08)"
-          strokeWidth="16"
-        />
+        <circle cx="110" cy="110" r={R} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="16" />
         {/* Glow under-ring */}
         <motion.circle
           cx="110"
@@ -245,17 +213,13 @@ function CircularIntelGauge({
 
       {/* Center content (not rotated) */}
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-        <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">
-          Intel Index
-        </div>
+        <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">Intel Index</div>
         <AnimatedNumber
           value={clamped}
           format={(v) => Math.round(v).toString()}
           className="font-mono text-6xl font-extrabold leading-none text-white"
         />
-        <div className="mt-1 text-[10px] font-semibold uppercase tracking-widest text-white/50">
-          / 100
-        </div>
+        <div className="mt-1 text-[10px] font-semibold uppercase tracking-widest text-white/50">/ 100</div>
         <div
           className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold"
           style={{ backgroundColor: tierColor, color: "#0F2C44" }}
@@ -280,8 +244,7 @@ export default function IntelMeter() {
       faultManualDetectionPct: { ...(p.faultManualDetectionPct ?? {}), [key]: pct },
     }));
 
-  const resetFaultDetection = () =>
-    setInputs((p) => ({ ...p, faultManualDetectionPct: undefined }));
+  const resetFaultDetection = () => setInputs((p) => ({ ...p, faultManualDetectionPct: undefined }));
 
   const tierColor =
     results.intelTier === "leader"
@@ -331,11 +294,7 @@ export default function IntelMeter() {
         </div>
 
         <div className="relative mx-auto max-w-7xl px-6 pb-16 pt-12 lg:pb-24 lg:pt-20">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-3xl"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-[var(--brand-green-bright)]">
               <Activity className="h-3.5 w-3.5" /> Battery OEM Intel Meter
             </div>
@@ -347,9 +306,9 @@ export default function IntelMeter() {
               </span>
             </h1>
             <p className="mt-6 max-w-2xl text-lg text-white/70 md:text-xl">
-              Every battery you ship without intelligence becomes a warranty risk, a thermal event
-              waiting to happen, a customer churn trigger. See — in rupees — what your fleet is
-              bleeding every month because it can't talk back.
+              Every battery you ship without intelligence becomes a warranty risk, a thermal event waiting to happen, a
+              customer churn trigger. See — in rupees — what your fleet is bleeding every month because it can't talk
+              back.
             </p>
           </motion.div>
 
@@ -431,11 +390,8 @@ export default function IntelMeter() {
                 <div className="mt-6 flex items-start gap-3 rounded-xl border border-[var(--brand-amber)]/40 bg-[var(--brand-amber)]/10 p-4">
                   <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-[var(--brand-amber)]" />
                   <div className="text-sm text-white/80">
-                    <strong className="text-[var(--brand-amber)]">
-                      High Risk / Blind Spot Zone.
-                    </strong>{" "}
-                    Reporting near-zero faults usually means you're flying blind — likely losing ~7%
-                    on Return on Assets.
+                    <strong className="text-[var(--brand-amber)]">High Risk / Blind Spot Zone.</strong> Reporting
+                    near-zero faults usually means you're flying blind — likely losing ~7% on Return on Assets.
                   </div>
                 </div>
               )}
@@ -463,35 +419,19 @@ export default function IntelMeter() {
 
                 <div className="mt-6 grid grid-cols-2 gap-3 border-t border-white/20 pt-6">
                   <div>
-                    <div className="text-[10px] uppercase tracking-wider text-white/70">
-                      Per month
-                    </div>
-                    <AnimatedNumber
-                      value={results.monthlyLeak}
-                      className="font-mono text-xl font-bold"
-                    />
+                    <div className="text-[10px] uppercase tracking-wider text-white/70">Per month</div>
+                    <AnimatedNumber value={results.monthlyLeak} className="font-mono text-xl font-bold" />
                   </div>
                   <div>
-                    <div className="text-[10px] uppercase tracking-wider text-white/70">
-                      Over 5 years
-                    </div>
-                    <AnimatedNumber
-                      value={results.fiveYearLeak}
-                      className="font-mono text-xl font-bold"
-                    />
+                    <div className="text-[10px] uppercase tracking-wider text-white/70">Over 5 years</div>
+                    <AnimatedNumber value={results.fiveYearLeak} className="font-mono text-xl font-bold" />
                   </div>
                   <div>
-                    <div className="text-[10px] uppercase tracking-wider text-white/70">
-                      Faults / month
-                    </div>
-                    <div className="font-mono text-xl font-bold">
-                      {Math.round(results.faultsPerMonth)}
-                    </div>
+                    <div className="text-[10px] uppercase tracking-wider text-white/70">Faults / month</div>
+                    <div className="font-mono text-xl font-bold">{Math.round(results.faultsPerMonth)}</div>
                   </div>
                   <div>
-                    <div className="text-[10px] uppercase tracking-wider text-white/70">
-                      Portfolio at risk
-                    </div>
+                    <div className="text-[10px] uppercase tracking-wider text-white/70">Portfolio at risk</div>
                     <div className="font-mono text-xl font-bold">
                       {formatINR(results.portfolioValue, { compact: true })}
                     </div>
@@ -502,104 +442,6 @@ export default function IntelMeter() {
           </div>
         </div>
       </section>
-
-      {/* BENCHMARK STRIP */}
-      <section className="border-y border-border bg-card">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-border md:grid-cols-4">
-          {[
-            { label: "Service Cost Cut", value: "50%", icon: Wrench },
-            { label: "Faster Diagnosis", value: "5 min", icon: Clock },
-            { label: "Verified Uptime", value: "99.3%", icon: Gauge },
-            { label: "Higher Resale", value: "+40%", icon: Wallet },
-          ].map((b) => (
-            <div key={b.label} className="flex items-center gap-4 px-6 py-6">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--brand-green)]/10 text-[var(--brand-green)]">
-                <b.icon className="h-5 w-5" />
-              </div>
-              <div>
-                <div className="font-mono text-2xl font-extrabold text-foreground">{b.value}</div>
-                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  {b.label}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* LOSS BREAKDOWN */}
-      <section id="breakdown" className="mx-auto max-w-7xl px-6 py-20">
-        <div className="mb-12 max-w-2xl">
-          <div className="text-xs font-bold uppercase tracking-widest text-[var(--brand-green)]">
-            The Loss Breakdown
-          </div>
-          <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-foreground md:text-5xl">
-            Where your money is silently leaving the building.
-          </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Each card below is one of five active leaks in an unmonitored OEM fleet. The math is
-            transparent — recalculated every time you move a slider.
-          </p>
-        </div>
-
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          <MetricCard
-            icon={Wrench}
-            label="A. Labor Leak (Diagnostic)"
-            manualValue={`${inputs.manualRcaHours} hrs / fault`}
-            intelValue="5 min / fault"
-            leak={results.laborLeak}
-            tone="red"
-            formula="(faults × hrs × ₹/hr)"
-          />
-          <MetricCard
-            icon={Gauge}
-            label="B. Uptime Earnings Gap"
-            manualValue={`${results.manualUptimePct}% uptime`}
-            intelValue={`${results.chargeupUptimePct}% uptime`}
-            leak={results.uptimeLeak}
-            tone="amber"
-            formula="+4.3 days × ₹/day"
-          />
-          <MetricCard
-            icon={ShieldCheck}
-            label="C. Warranty Field-Blindness"
-            manualValue="Weeks of disputes"
-            intelValue="Seconds, auto-validated"
-            leak={results.warrantyLeak}
-            tone="navy"
-            formula="2% × battery value"
-          />
-          <MetricCard
-            icon={Wallet}
-            label="D. Resale / Devaluation"
-            manualValue="Standard market"
-            intelValue="+40% w/ Battery Passport"
-            leak={results.resaleLeak}
-            tone="navy"
-            formula="40% uplift / 5 yrs"
-          />
-          <MetricCard
-            icon={Zap}
-            label="E. Preventable Breakdowns"
-            manualValue="Reactive only"
-            intelValue="80% prevented (7–30d alerts)"
-            leak={results.preventedRepairValue}
-            tone="red"
-            formula="80% × repair value"
-          />
-          <MetricCard
-            icon={Sparkles}
-            label="F. Return on Assets Uplift"
-            manualValue="Standard RoA"
-            intelValue="+7% RoA on portfolio"
-            leak={results.annualRoaGain / 12}
-            tone="amber"
-            formula="7% × portfolio / 12"
-          />
-        </div>
-      </section>
-
       {/* COMBINED — FAULT INTELLIGENCE + MASTER INTEL INDEX */}
       <section id="faults" className="relative overflow-hidden bg-gradient-hero text-white">
         <div className="pointer-events-none absolute inset-0 opacity-30">
@@ -616,8 +458,8 @@ export default function IntelMeter() {
               Six silent killers feed one master meter.
             </h2>
             <p className="mt-3 text-base text-white/70">
-              Drag each fault's manual detection rate to match what your team actually catches
-              today. The needle on the right swings live to show your fleet's intelligence score.
+              Drag each fault's manual detection rate to match what your team actually catches today. The needle on the
+              right swings live to show your fleet's intelligence score.
             </p>
           </div>
 
@@ -693,10 +535,7 @@ export default function IntelMeter() {
                   { range: "40–69", label: "Fragmented Data", color: "var(--brand-amber)" },
                   { range: "0–39", label: "The Dark Zone", color: "var(--brand-red)" },
                 ].map((t) => (
-                  <div
-                    key={t.label}
-                    className="flex flex-col gap-1 rounded-lg border border-white/10 bg-white/5 p-2"
-                  >
+                  <div key={t.label} className="flex flex-col gap-1 rounded-lg border border-white/10 bg-white/5 p-2">
                     <div className="flex items-center gap-1.5">
                       <span className="h-2 w-2 rounded-full" style={{ backgroundColor: t.color }} />
                       <span className="font-mono text-[10px] font-bold text-white">{t.range}</span>
@@ -721,33 +560,23 @@ export default function IntelMeter() {
                 <Activity className="h-4 w-4 text-[var(--brand-green-bright)]" />
               </div>
 
-              <CircularIntelGauge
-                score={results.intelIndex}
-                tierLabel={results.intelTierLabel}
-                tierColor={tierColor}
-              />
+              <CircularIntelGauge score={results.intelIndex} tierLabel={results.intelTierLabel} tierColor={tierColor} />
 
               <div className="mt-5 grid grid-cols-3 gap-2 border-t border-white/10 pt-4 text-center">
                 <div>
-                  <div className="text-[9px] font-bold uppercase tracking-wider text-white/60">
-                    Faults missed/mo
-                  </div>
+                  <div className="text-[9px] font-bold uppercase tracking-wider text-white/60">Faults missed/mo</div>
                   <div className="font-mono text-lg font-extrabold text-[var(--brand-red)]">
                     {Math.round(results.faultMeters.reduce((s, m) => s + m.missedByManual, 0))}
                   </div>
                 </div>
                 <div>
-                  <div className="text-[9px] font-bold uppercase tracking-wider text-white/60">
-                    Prevented/mo
-                  </div>
+                  <div className="text-[9px] font-bold uppercase tracking-wider text-white/60">Prevented/mo</div>
                   <div className="font-mono text-lg font-extrabold text-[var(--brand-green-bright)]">
                     {Math.round(results.preventedFaultsPerMonth)}
                   </div>
                 </div>
                 <div>
-                  <div className="text-[9px] font-bold uppercase tracking-wider text-white/60">
-                    RoA gain/yr
-                  </div>
+                  <div className="text-[9px] font-bold uppercase tracking-wider text-white/60">RoA gain/yr</div>
                   <div className="font-mono text-sm font-extrabold text-white">
                     {formatINR(results.annualRoaGain, { compact: true })}
                   </div>
@@ -772,13 +601,11 @@ export default function IntelMeter() {
                   Battery Performance — State of Health
                 </div>
                 <p className="text-sm text-white/70">
-                  What a Chargeup Battery Passport reveals across your{" "}
-                  {inputs.totalBatteries.toLocaleString("en-IN")}-unit fleet.
+                  What a Chargeup Battery Passport reveals across your {inputs.totalBatteries.toLocaleString("en-IN")}
+                  -unit fleet.
                 </p>
               </div>
-              <div className="text-xs text-white/60">
-                Without IoT, you don't know which bucket each battery is in.
-              </div>
+              <div className="text-xs text-white/60">Without IoT, you don't know which bucket each battery is in.</div>
             </div>
             <div className="grid divide-y divide-white/10 md:grid-cols-3 md:divide-x md:divide-y-0">
               {[
@@ -806,10 +633,7 @@ export default function IntelMeter() {
               ].map((s) => (
                 <div key={s.label} className="p-5">
                   <div className="flex items-center gap-2">
-                    <span
-                      className="h-2.5 w-2.5 rounded-full"
-                      style={{ backgroundColor: s.color }}
-                    />
+                    <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: s.color }} />
                     <span className="text-sm font-bold text-white">{s.label}</span>
                     <span className="text-xs text-white/60">({s.range})</span>
                   </div>
@@ -820,15 +644,106 @@ export default function IntelMeter() {
                     <span className="text-sm text-white/60">{s.pct}%</span>
                   </div>
                   <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
-                    <div
-                      className="h-full rounded-full"
-                      style={{ width: `${s.pct}%`, backgroundColor: s.color }}
-                    />
+                    <div className="h-full rounded-full" style={{ width: `${s.pct}%`, backgroundColor: s.color }} />
                   </div>
                 </div>
               ))}
             </div>
           </div>
+        </div>
+      </section>
+      {/* BENCHMARK STRIP */}
+      <section className="border-y border-border bg-card">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-border md:grid-cols-4">
+          {[
+            { label: "Service Cost Cut", value: "50%", icon: Wrench },
+            { label: "Faster Diagnosis", value: "5 min", icon: Clock },
+            { label: "Verified Uptime", value: "99.3%", icon: Gauge },
+            { label: "Higher Resale", value: "+40%", icon: Wallet },
+          ].map((b) => (
+            <div key={b.label} className="flex items-center gap-4 px-6 py-6">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--brand-green)]/10 text-[var(--brand-green)]">
+                <b.icon className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="font-mono text-2xl font-extrabold text-foreground">{b.value}</div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{b.label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* LOSS BREAKDOWN */}
+      <section id="breakdown" className="mx-auto max-w-7xl px-6 py-20">
+        <div className="mb-12 max-w-2xl">
+          <div className="text-xs font-bold uppercase tracking-widest text-[var(--brand-green)]">
+            The Loss Breakdown
+          </div>
+          <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-foreground md:text-5xl">
+            Where your money is silently leaving the building.
+          </h2>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Each card below is one of five active leaks in an unmonitored OEM fleet. The math is transparent —
+            recalculated every time you move a slider.
+          </p>
+        </div>
+
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <MetricCard
+            icon={Wrench}
+            label="A. Labor Leak (Diagnostic)"
+            manualValue={`${inputs.manualRcaHours} hrs / fault`}
+            intelValue="5 min / fault"
+            leak={results.laborLeak}
+            tone="red"
+            formula="(faults × hrs × ₹/hr)"
+          />
+          <MetricCard
+            icon={Gauge}
+            label="B. Uptime Earnings Gap"
+            manualValue={`${results.manualUptimePct}% uptime`}
+            intelValue={`${results.chargeupUptimePct}% uptime`}
+            leak={results.uptimeLeak}
+            tone="amber"
+            formula="+4.3 days × ₹/day"
+          />
+          <MetricCard
+            icon={ShieldCheck}
+            label="C. Warranty Field-Blindness"
+            manualValue="Weeks of disputes"
+            intelValue="Seconds, auto-validated"
+            leak={results.warrantyLeak}
+            tone="navy"
+            formula="2% × battery value"
+          />
+          <MetricCard
+            icon={Wallet}
+            label="D. Resale / Devaluation"
+            manualValue="Standard market"
+            intelValue="+40% w/ Battery Passport"
+            leak={results.resaleLeak}
+            tone="navy"
+            formula="40% uplift / 5 yrs"
+          />
+          <MetricCard
+            icon={Zap}
+            label="E. Preventable Breakdowns"
+            manualValue="Reactive only"
+            intelValue="80% prevented (7–30d alerts)"
+            leak={results.preventedRepairValue}
+            tone="red"
+            formula="80% × repair value"
+          />
+          <MetricCard
+            icon={Sparkles}
+            label="F. Return on Assets Uplift"
+            manualValue="Standard RoA"
+            intelValue="+7% RoA on portfolio"
+            leak={results.annualRoaGain / 12}
+            tone="amber"
+            formula="7% × portfolio / 12"
+          />
         </div>
       </section>
 
@@ -847,9 +762,8 @@ export default function IntelMeter() {
             monthly leak.
           </h2>
           <p className="mt-5 text-lg text-muted-foreground">
-            Move from Manual to Intelligent. Turn every battery into a self-reporting,
-            self-validating, self-financeable digital asset — backed by Chargeup's ₹50 Cr in
-            disbursed financing with &lt;2% defaults.
+            Move from Manual to Intelligent. Turn every battery into a self-reporting, self-validating, self-financeable
+            digital asset — backed by Chargeup's ₹50 Cr in disbursed financing with &lt;2% defaults.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Button
