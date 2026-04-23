@@ -102,7 +102,26 @@ export const BENCHMARKS = {
   roaUpliftPct: 0.07,
 };
 
-export function calculate(inputs: CalcInputs): CalcResults {
+export const DEFAULT_MANUAL_DETECTION_PCT: Record<FaultKey, number> = {
+  warranty: 5,
+  deepDischarge: 10,
+  thermal: 8,
+  cellImbalance: 5,
+  bms: 15,
+  sensor: 10,
+};
+
+export const FAULT_META: Record<
+  FaultKey,
+  { label: string; sublabel: string; sharePct: number; severity: number }
+> = {
+  warranty: { label: "Warranty Violations", sublabel: "Customer abuse / out-of-spec usage", sharePct: 0.18, severity: 0.45 },
+  deepDischarge: { label: "Deep Discharge Events", sublabel: "Capacity-killing over-drain", sharePct: 0.16, severity: 0.18 },
+  thermal: { label: "Thermal Alerts", sublabel: "Overheating → fire risk", sharePct: 0.12, severity: 0.6 },
+  cellImbalance: { label: "Cell Imbalance", sublabel: "Early-warning of pack failure", sharePct: 0.22, severity: 0.15 },
+  bms: { label: "BMS Faults", sublabel: "Brain of the battery misbehaving", sharePct: 0.18, severity: 0.25 },
+  sensor: { label: "Sensor Faults (NTC / Voltage)", sublabel: "Blind instrumentation", sharePct: 0.14, severity: 0.12 },
+};
   const faultsPerMonth = inputs.totalBatteries * (inputs.monthlyFaultRatePct / 100);
 
   // A. Labor Leak
