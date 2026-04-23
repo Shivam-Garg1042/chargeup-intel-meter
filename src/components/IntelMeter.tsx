@@ -235,15 +235,16 @@ export default function IntelMeter() {
               <Activity className="h-3.5 w-3.5" /> Battery OEM Intel Meter
             </div>
             <h1 className="mt-6 text-5xl font-extrabold leading-[1.05] tracking-tight md:text-7xl">
-              You're not selling Electric Vehicles.
+              Without Chargeup IoT,
               <br />
               <span className="bg-gradient-to-r from-[var(--brand-green-bright)] to-white bg-clip-text text-transparent">
-                You're bleeding intelligence.
+                you don't sell batteries — you ship blind spots.
               </span>
             </h1>
             <p className="mt-6 max-w-2xl text-lg text-white/70 md:text-xl">
-              Every unmonitored battery in your fleet is a silent leak — labor, uptime, warranty
-              and resale value lost every single day. Move two sliders and see the damage.
+              Every battery you ship without intelligence becomes a warranty risk, a thermal
+              event waiting to happen, a customer churn trigger. See — in rupees — what your
+              fleet is bleeding every month because it can't talk back.
             </p>
           </motion.div>
 
