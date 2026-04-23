@@ -115,12 +115,42 @@ export const FAULT_META: Record<
   FaultKey,
   { label: string; sublabel: string; sharePct: number; severity: number }
 > = {
-  warranty: { label: "Warranty Violations", sublabel: "Customer abuse / out-of-spec usage", sharePct: 0.18, severity: 0.45 },
-  deepDischarge: { label: "Deep Discharge Events", sublabel: "Capacity-killing over-drain", sharePct: 0.16, severity: 0.18 },
-  thermal: { label: "Thermal Alerts", sublabel: "Overheating → fire risk", sharePct: 0.12, severity: 0.6 },
-  cellImbalance: { label: "Cell Imbalance", sublabel: "Early-warning of pack failure", sharePct: 0.22, severity: 0.15 },
-  bms: { label: "BMS Faults", sublabel: "Brain of the battery misbehaving", sharePct: 0.18, severity: 0.25 },
-  sensor: { label: "Sensor Faults (NTC / Voltage)", sublabel: "Blind instrumentation", sharePct: 0.14, severity: 0.12 },
+  warranty: {
+    label: "Warranty Violations",
+    sublabel: "Customer abuse / out-of-spec usage",
+    sharePct: 0.18,
+    severity: 0.45,
+  },
+  deepDischarge: {
+    label: "Deep Discharge Events",
+    sublabel: "Capacity-killing over-drain",
+    sharePct: 0.16,
+    severity: 0.18,
+  },
+  thermal: {
+    label: "Thermal Alerts",
+    sublabel: "Overheating → fire risk",
+    sharePct: 0.12,
+    severity: 0.6,
+  },
+  cellImbalance: {
+    label: "Cell Imbalance",
+    sublabel: "Early-warning of pack failure",
+    sharePct: 0.22,
+    severity: 0.15,
+  },
+  bms: {
+    label: "BMS Faults",
+    sublabel: "Brain of the battery misbehaving",
+    sharePct: 0.18,
+    severity: 0.25,
+  },
+  sensor: {
+    label: "Sensor Faults (NTC / Voltage)",
+    sublabel: "Blind instrumentation",
+    sharePct: 0.14,
+    severity: 0.12,
+  },
 };
 
 export function calculate(inputs: CalcInputs): CalcResults {
@@ -186,18 +216,15 @@ export function calculate(inputs: CalcInputs): CalcResults {
   //   Fault rate (0-15), RCA speed (0-15), Scale (0-10), Asset (0-5), Revenue (0-5)
   const totalShare = faultMeters.reduce((s, m) => s + FAULT_META[m.key].sharePct, 0);
   const weightedDetection =
-    faultMeters.reduce(
-      (s, m) => s + (m.manualDetectionPct / 100) * FAULT_META[m.key].sharePct,
-      0,
-    ) / (totalShare || 1);
+    faultMeters.reduce((s, m) => s + (m.manualDetectionPct / 100) * FAULT_META[m.key].sharePct, 0) /
+    (totalShare || 1);
   const visibilityScore = weightedDetection * 50;
   const faultScore = Math.max(0, 15 - (inputs.monthlyFaultRatePct - 1) * 1.25);
   const rcaScore = Math.max(0, 15 - inputs.manualRcaHours * 2.5);
   const scaleScore = Math.max(0, 10 - Math.log10(Math.max(50, inputs.totalBatteries)) * 2.3);
   const assetScore = Math.max(0, 5 - (inputs.avgBatteryValue / 200000) * 5);
   const revenueScore = Math.max(0, 5 - (inputs.dailyRevenuePerAsset / 2000) * 5);
-  const rawIndex =
-    visibilityScore + faultScore + rcaScore + scaleScore + assetScore + revenueScore;
+  const rawIndex = visibilityScore + faultScore + rcaScore + scaleScore + assetScore + revenueScore;
   const intelIndex = Math.round(Math.min(100, Math.max(0, rawIndex)));
 
   let intelTier: CalcResults["intelTier"] = "dark";

@@ -197,17 +197,58 @@ function NeedleGauge({ score }: { score: number }) {
   return (
     <div className="relative mx-auto mt-4 w-full max-w-[320px]">
       <svg viewBox="0 0 200 130" className="h-auto w-full">
-        <path d={arcPath(-90, 90)} stroke="rgba(255,255,255,0.1)" strokeWidth="14" fill="none" strokeLinecap="round" />
-        <path d={arcPath(-90, -30)} stroke="var(--brand-red)" strokeWidth="14" fill="none" strokeLinecap="round" opacity="0.95" />
-        <path d={arcPath(-30, 30)} stroke="var(--brand-amber)" strokeWidth="14" fill="none" strokeLinecap="round" opacity="0.95" />
-        <path d={arcPath(30, 90)} stroke="var(--brand-green-bright)" strokeWidth="14" fill="none" strokeLinecap="round" opacity="0.95" />
+        <path
+          d={arcPath(-90, 90)}
+          stroke="rgba(255,255,255,0.1)"
+          strokeWidth="14"
+          fill="none"
+          strokeLinecap="round"
+        />
+        <path
+          d={arcPath(-90, -30)}
+          stroke="var(--brand-red)"
+          strokeWidth="14"
+          fill="none"
+          strokeLinecap="round"
+          opacity="0.95"
+        />
+        <path
+          d={arcPath(-30, 30)}
+          stroke="var(--brand-amber)"
+          strokeWidth="14"
+          fill="none"
+          strokeLinecap="round"
+          opacity="0.95"
+        />
+        <path
+          d={arcPath(30, 90)}
+          stroke="var(--brand-green-bright)"
+          strokeWidth="14"
+          fill="none"
+          strokeLinecap="round"
+          opacity="0.95"
+        />
 
-        <text x="14" y="125" fontSize="9" fontFamily="monospace" fill="rgba(255,255,255,0.6)">0</text>
-        <text x="92" y="20" fontSize="9" fontFamily="monospace" fill="rgba(255,255,255,0.6)">50</text>
-        <text x="172" y="125" fontSize="9" fontFamily="monospace" fill="rgba(255,255,255,0.6)">100</text>
+        <text x="14" y="125" fontSize="9" fontFamily="monospace" fill="rgba(255,255,255,0.6)">
+          0
+        </text>
+        <text x="92" y="20" fontSize="9" fontFamily="monospace" fill="rgba(255,255,255,0.6)">
+          50
+        </text>
+        <text x="172" y="125" fontSize="9" fontFamily="monospace" fill="rgba(255,255,255,0.6)">
+          100
+        </text>
 
         <motion.g style={{ originX: "100px", originY: "110px", rotate }}>
-          <line x1="100" y1="110" x2="100" y2="32" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+          <line
+            x1="100"
+            y1="110"
+            x2="100"
+            y2="32"
+            stroke="white"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
           <polygon points="100,28 96,38 104,38" fill="var(--brand-green-bright)" />
         </motion.g>
         <circle cx="100" cy="110" r="8" fill="white" />
@@ -297,17 +338,14 @@ export default function IntelMeter() {
               </span>
             </h1>
             <p className="mt-6 max-w-2xl text-lg text-white/70 md:text-xl">
-              Every battery you ship without intelligence becomes a warranty risk, a thermal
-              event waiting to happen, a customer churn trigger. See — in rupees — what your
-              fleet is bleeding every month because it can't talk back.
+              Every battery you ship without intelligence becomes a warranty risk, a thermal event
+              waiting to happen, a customer churn trigger. See — in rupees — what your fleet is
+              bleeding every month because it can't talk back.
             </p>
           </motion.div>
 
           {/* CALCULATOR + BIG REVEAL */}
-          <div
-            id="calculator"
-            className="mt-12 grid gap-6 lg:mt-16 lg:grid-cols-[1.1fr_1fr]"
-          >
+          <div id="calculator" className="mt-12 grid gap-6 lg:mt-16 lg:grid-cols-[1.1fr_1fr]">
             {/* Inputs panel */}
             <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl md:p-8">
               <div className="flex items-center justify-between">
@@ -384,9 +422,11 @@ export default function IntelMeter() {
                 <div className="mt-6 flex items-start gap-3 rounded-xl border border-[var(--brand-amber)]/40 bg-[var(--brand-amber)]/10 p-4">
                   <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-[var(--brand-amber)]" />
                   <div className="text-sm text-white/80">
-                    <strong className="text-[var(--brand-amber)]">High Risk / Blind Spot Zone.</strong>{" "}
-                    Reporting near-zero faults usually means you're flying blind — likely losing
-                    ~7% on Return on Assets.
+                    <strong className="text-[var(--brand-amber)]">
+                      High Risk / Blind Spot Zone.
+                    </strong>{" "}
+                    Reporting near-zero faults usually means you're flying blind — likely losing ~7%
+                    on Return on Assets.
                   </div>
                 </div>
               )}
@@ -567,8 +607,8 @@ export default function IntelMeter() {
               Six silent killers feed one master meter.
             </h2>
             <p className="mt-3 text-base text-white/70">
-              Drag each fault's manual detection rate to match what your team actually catches today.
-              The needle on the right swings live to show your fleet's intelligence score.
+              Drag each fault's manual detection rate to match what your team actually catches
+              today. The needle on the right swings live to show your fleet's intelligence score.
             </p>
           </div>
 
@@ -599,9 +639,7 @@ export default function IntelMeter() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-baseline justify-between gap-2">
-                          <div className="truncate text-sm font-semibold text-white">
-                            {m.label}
-                          </div>
+                          <div className="truncate text-sm font-semibold text-white">{m.label}</div>
                           <div className="font-mono text-[11px] font-bold text-white/60">
                             {Math.round(m.detected)} faults/mo
                           </div>
@@ -699,9 +737,7 @@ export default function IntelMeter() {
                     Faults missed/mo
                   </div>
                   <div className="font-mono text-lg font-extrabold text-[var(--brand-red)]">
-                    {Math.round(
-                      results.faultMeters.reduce((s, m) => s + m.missedByManual, 0),
-                    )}
+                    {Math.round(results.faultMeters.reduce((s, m) => s + m.missedByManual, 0))}
                   </div>
                 </div>
                 <div>
@@ -750,13 +786,34 @@ export default function IntelMeter() {
             </div>
             <div className="grid divide-y divide-white/10 md:grid-cols-3 md:divide-x md:divide-y-0">
               {[
-                { label: "Healthy SoH", range: ">95%", count: results.sohSplit.healthy, pct: 56, color: "var(--brand-green-bright)" },
-                { label: "Moderate SoH", range: "85–95%", count: results.sohSplit.moderate, pct: 27, color: "var(--brand-amber)" },
-                { label: "At Risk", range: "<85%", count: results.sohSplit.atRisk, pct: 17, color: "var(--brand-red)" },
+                {
+                  label: "Healthy SoH",
+                  range: ">95%",
+                  count: results.sohSplit.healthy,
+                  pct: 56,
+                  color: "var(--brand-green-bright)",
+                },
+                {
+                  label: "Moderate SoH",
+                  range: "85–95%",
+                  count: results.sohSplit.moderate,
+                  pct: 27,
+                  color: "var(--brand-amber)",
+                },
+                {
+                  label: "At Risk",
+                  range: "<85%",
+                  count: results.sohSplit.atRisk,
+                  pct: 17,
+                  color: "var(--brand-red)",
+                },
               ].map((s) => (
                 <div key={s.label} className="p-5">
                   <div className="flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: s.color }} />
+                    <span
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ backgroundColor: s.color }}
+                    />
                     <span className="text-sm font-bold text-white">{s.label}</span>
                     <span className="text-xs text-white/60">({s.range})</span>
                   </div>
@@ -767,7 +824,10 @@ export default function IntelMeter() {
                     <span className="text-sm text-white/60">{s.pct}%</span>
                   </div>
                   <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
-                    <div className="h-full rounded-full" style={{ width: `${s.pct}%`, backgroundColor: s.color }} />
+                    <div
+                      className="h-full rounded-full"
+                      style={{ width: `${s.pct}%`, backgroundColor: s.color }}
+                    />
                   </div>
                 </div>
               ))}
