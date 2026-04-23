@@ -601,37 +601,40 @@ export default function IntelMeter() {
         </div>
       </section>
 
-      {/* FAULT INTELLIGENCE — MASTER GAUGE + MINI METERS */}
-      <section id="faults" className="border-t border-border bg-secondary/40">
-        <div className="mx-auto max-w-7xl px-6 py-20">
+      {/* COMBINED — FAULT INTELLIGENCE + MASTER INTEL INDEX */}
+      <section id="faults" className="relative overflow-hidden bg-gradient-hero text-white">
+        <div className="pointer-events-none absolute inset-0 opacity-30">
+          <div className="absolute -left-20 top-20 h-96 w-96 rounded-full bg-[var(--brand-green)]/30 blur-3xl" />
+          <div className="absolute right-0 bottom-10 h-96 w-96 rounded-full bg-[var(--brand-green-bright)]/20 blur-3xl" />
+        </div>
+
+        <div id="index" className="relative mx-auto max-w-7xl px-6 py-20">
           <div className="mb-10 max-w-3xl">
-            <div className="text-xs font-bold uppercase tracking-widest text-[var(--brand-green)]">
-              Fault Intelligence • What Chargeup IoT sees that you don't
+            <div className="text-xs font-bold uppercase tracking-widest text-[var(--brand-green-bright)]">
+              Fault Intelligence × Intel Index
             </div>
-            <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-foreground md:text-5xl">
-              Six silent killers — one master meter.
+            <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
+              Six silent killers feed one master meter.
             </h2>
-            <p className="mt-3 text-base text-muted-foreground">
-              Each fault below is invisible to manual ops. The needle on the right shows your
-              fleet's overall blind-spot exposure this month.
+            <p className="mt-3 text-base text-white/70">
+              Drag each fault's manual detection rate to match what your team actually catches today.
+              The needle on the right swings live to show your fleet's intelligence score.
             </p>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-            {/* Mini meters — compact list */}
-            <div className="rounded-2xl border border-border bg-card p-5 shadow-card">
+          <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
+            {/* LEFT — Tunable mini-meters */}
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-sm font-bold text-foreground">Fault mini-meters</h3>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Manual detection rate
+                <h3 className="text-sm font-bold text-white">Fault mini-meters</h3>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-white/60">
+                  Drag to set manual detection %
                 </span>
               </div>
-              <div className="divide-y divide-border">
+
+              <div className="divide-y divide-white/10">
                 {results.faultMeters.map((m, i) => {
                   const Icon = [ShieldAlert, BatteryWarning, Flame, Battery, Cpu, Radio][i] ?? Eye;
-                  const manualPct =
-                    m.detected > 0 ? (m.missedByManual / m.detected) * 100 : 0;
-                  const manualDetectPct = Math.max(2, 100 - manualPct);
                   return (
                     <motion.div
                       key={m.key}
@@ -641,33 +644,33 @@ export default function IntelMeter() {
                       transition={{ delay: i * 0.04 }}
                       className="flex items-center gap-3 py-3"
                     >
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--brand-red)]/10 text-[var(--brand-red)]">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--brand-red)]/15 text-[var(--brand-red)] ring-1 ring-[var(--brand-red)]/30">
                         <Icon className="h-4 w-4" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-baseline justify-between gap-2">
-                          <div className="truncate text-sm font-semibold text-foreground">
+                          <div className="truncate text-sm font-semibold text-white">
                             {m.label}
                           </div>
-                          <div className="font-mono text-[11px] font-bold text-muted-foreground">
-                            {Math.round(m.detected)}/mo
+                          <div className="font-mono text-[11px] font-bold text-white/60">
+                            {Math.round(m.detected)} faults/mo
                           </div>
                         </div>
-                        <div className="mt-1.5 flex items-center gap-2">
-                          <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-                            <motion.div
-                              className="h-full rounded-full bg-gradient-to-r from-[var(--brand-red)] via-[var(--brand-amber)] to-[var(--brand-green)]"
-                              initial={false}
-                              animate={{ width: `${manualDetectPct}%` }}
-                              transition={{ type: "spring", stiffness: 80, damping: 18 }}
-                            />
-                          </div>
-                          <span className="w-10 text-right font-mono text-[10px] font-bold text-[var(--brand-red)]">
-                            {Math.round(manualDetectPct)}%
+                        <div className="mt-1.5 flex items-center gap-3">
+                          <Slider
+                            value={[m.manualDetectionPct]}
+                            min={0}
+                            max={100}
+                            step={1}
+                            onValueChange={(v) => updateFaultDetection(m.key, v[0])}
+                            className="flex-1 [&_[data-slot=slider-track]]:h-1.5 [&_[data-slot=slider-track]]:bg-white/15 [&_[data-slot=slider-range]]:bg-gradient-to-r [&_[data-slot=slider-range]]:from-[var(--brand-red)] [&_[data-slot=slider-range]]:via-[var(--brand-amber)] [&_[data-slot=slider-range]]:to-[var(--brand-green-bright)] [&_[data-slot=slider-thumb]]:h-3.5 [&_[data-slot=slider-thumb]]:w-3.5 [&_[data-slot=slider-thumb]]:border-white [&_[data-slot=slider-thumb]]:bg-white"
+                          />
+                          <span className="w-10 text-right font-mono text-[11px] font-bold text-white">
+                            {Math.round(m.manualDetectionPct)}%
                           </span>
                           <AnimatedNumber
                             value={m.valueAtRisk}
-                            className="w-20 text-right font-mono text-[11px] font-bold text-foreground"
+                            className="w-20 text-right font-mono text-[11px] font-bold text-[var(--brand-red)]"
                           />
                         </div>
                       </div>
@@ -675,203 +678,149 @@ export default function IntelMeter() {
                   );
                 })}
               </div>
-              <div className="mt-4 flex items-center justify-between rounded-lg bg-[var(--brand-red)]/8 px-3 py-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-red)]">
+
+              <div className="mt-4 flex items-center justify-between rounded-lg border border-[var(--brand-red)]/30 bg-[var(--brand-red)]/15 px-3 py-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-white">
                   Total value at risk this month
                 </span>
                 <AnimatedNumber
                   value={results.faultMeters.reduce((s, m) => s + m.valueAtRisk, 0)}
-                  className="font-mono text-sm font-extrabold text-[var(--brand-red)]"
+                  className="font-mono text-sm font-extrabold text-white"
                 />
               </div>
-            </div>
 
-            {/* MASTER INTEL METER — needle gauge */}
-            <MasterIntelGauge
-              score={results.intelIndex}
-              label={results.intelTierLabel}
-              color={tierColor}
-              faults={results.faultMeters.length}
-              missed={Math.round(
-                results.faultMeters.reduce((s, m) => s + m.missedByManual, 0),
-              )}
-            />
-          </div>
-
-          {/* SoH Portfolio strip */}
-          <div className="mt-10 overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-            <div className="flex flex-col items-start justify-between gap-4 border-b border-border p-5 md:flex-row md:items-center">
-              <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-[var(--brand-navy)]">
-                  Battery Performance — State of Health
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  What a Chargeup Battery Passport reveals across your{" "}
-                  {inputs.totalBatteries.toLocaleString("en-IN")}-unit fleet.
-                </p>
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Without IoT, you don't know which bucket each battery is in.
-              </div>
-            </div>
-            <div className="grid divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0">
-              {[
-                {
-                  label: "Healthy SoH",
-                  range: ">95%",
-                  count: results.sohSplit.healthy,
-                  pct: 56,
-                  color: "var(--brand-green)",
-                },
-                {
-                  label: "Moderate SoH",
-                  range: "85–95%",
-                  count: results.sohSplit.moderate,
-                  pct: 27,
-                  color: "var(--brand-navy)",
-                },
-                {
-                  label: "At Risk",
-                  range: "<85%",
-                  count: results.sohSplit.atRisk,
-                  pct: 17,
-                  color: "var(--brand-red)",
-                },
-              ].map((s) => (
-                <div key={s.label} className="p-5">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="h-2.5 w-2.5 rounded-full"
-                      style={{ backgroundColor: s.color }}
-                    />
-                    <span className="text-sm font-bold text-foreground">{s.label}</span>
-                    <span className="text-xs text-muted-foreground">({s.range})</span>
-                  </div>
-                  <div className="mt-2 flex items-baseline gap-2">
-                    <span className="font-mono text-3xl font-extrabold text-foreground">
-                      {s.count.toLocaleString("en-IN")}
-                    </span>
-                    <span className="text-sm text-muted-foreground">{s.pct}%</span>
-                  </div>
-                  <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full"
-                      style={{ width: `${s.pct}%`, backgroundColor: s.color }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="index" className="bg-gradient-hero py-20 text-white">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-[1fr_1.2fr]">
-          <div>
-            <div className="text-xs font-bold uppercase tracking-widest text-[var(--brand-green-bright)]">
-              The Intel Index
-            </div>
-            <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
-              Your fleet's intelligence score.
-            </h2>
-            <p className="mt-4 text-white/70">
-              A composite of fault frequency, RCA speed and monitoring depth — benchmarked against
-              the Chargeup Fi-Ne-Tech standard.
-            </p>
-
-            <div className="mt-8 space-y-3">
-              {[
-                { range: "70–100", label: "Fi-Ne-Tech Leader", color: "var(--brand-green)" },
-                { range: "40–69", label: "Fragmented Data", color: "var(--brand-amber)" },
-                { range: "0–39", label: "The Dark Zone", color: "var(--brand-red)" },
-              ].map((t) => (
-                <div
-                  key={t.label}
-                  className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4"
-                >
+              {/* Tier legend */}
+              <div className="mt-5 grid grid-cols-3 gap-2 border-t border-white/10 pt-4">
+                {[
+                  { range: "70–100", label: "Fi-Ne-Tech Leader", color: "var(--brand-green)" },
+                  { range: "40–69", label: "Fragmented Data", color: "var(--brand-amber)" },
+                  { range: "0–39", label: "The Dark Zone", color: "var(--brand-red)" },
+                ].map((t) => (
                   <div
-                    className="h-3 w-3 rounded-full"
-                    style={{ backgroundColor: t.color }}
-                  />
-                  <div className="font-mono text-sm font-bold">{t.range}</div>
-                  <div className="text-sm text-white/80">{t.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Gauge */}
-          <div className="relative mx-auto w-full max-w-md">
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
-              <div className="text-center">
-                <div className="text-xs font-bold uppercase tracking-widest text-white/60">
-                  Your Intel Index
-                </div>
-                <div className="relative mx-auto mt-6 h-48 w-48">
-                  <svg viewBox="0 0 200 200" className="h-full w-full -rotate-90">
-                    <circle
-                      cx="100"
-                      cy="100"
-                      r="84"
-                      strokeWidth="14"
-                      stroke="rgba(255,255,255,0.08)"
-                      fill="none"
-                    />
-                    <motion.circle
-                      cx="100"
-                      cy="100"
-                      r="84"
-                      strokeWidth="14"
-                      stroke={tierColor}
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeDasharray={`${2 * Math.PI * 84}`}
-                      initial={false}
-                      animate={{
-                        strokeDashoffset:
-                          2 * Math.PI * 84 * (1 - results.intelIndex / 100),
-                      }}
-                      transition={{ type: "spring", stiffness: 60, damping: 16 }}
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <AnimatedNumber
-                      value={results.intelIndex}
-                      format={(v) => Math.round(v).toString()}
-                      className="font-mono text-6xl font-extrabold"
-                    />
-                    <div className="text-xs font-semibold uppercase tracking-widest text-white/60">
-                      / 100
+                    key={t.label}
+                    className="flex flex-col gap-1 rounded-lg border border-white/10 bg-white/5 p-2"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full" style={{ backgroundColor: t.color }} />
+                      <span className="font-mono text-[10px] font-bold text-white">{t.range}</span>
                     </div>
+                    <span className="text-[10px] text-white/70">{t.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* RIGHT — Master Intel Meter (needle) */}
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-wider text-[var(--brand-green-bright)]">
+                    Master Intel Meter
+                  </div>
+                  <div className="text-[11px] text-white/60">
+                    Live • {results.faultMeters.length} fault classes tracked
                   </div>
                 </div>
+                <Activity className="h-4 w-4 text-[var(--brand-green-bright)]" />
+              </div>
+
+              <NeedleGauge score={results.intelIndex} />
+
+              <div className="mt-2 text-center">
+                <AnimatedNumber
+                  value={results.intelIndex}
+                  format={(v) => Math.round(v).toString()}
+                  className="font-mono text-6xl font-extrabold text-white"
+                />
+                <div className="text-[10px] font-semibold uppercase tracking-widest text-white/60">
+                  / 100 Intel Index
+                </div>
                 <div
-                  className="mt-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-bold"
-                  style={{ backgroundColor: `${tierColor}`, color: "#0F2C44" }}
+                  className="mt-3 inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold"
+                  style={{ backgroundColor: tierColor, color: "#0F2C44" }}
                 >
                   {results.intelTierLabel}
                 </div>
               </div>
 
-              <div className="mt-6 grid grid-cols-2 gap-3 border-t border-white/10 pt-6 text-center">
+              <div className="mt-5 grid grid-cols-3 gap-2 border-t border-white/10 pt-4 text-center">
                 <div>
-                  <div className="text-[10px] uppercase tracking-wider text-white/60">
-                    Faults prevented / mo
+                  <div className="text-[9px] font-bold uppercase tracking-wider text-white/60">
+                    Faults missed/mo
                   </div>
-                  <div className="font-mono text-lg font-bold">
+                  <div className="font-mono text-lg font-extrabold text-[var(--brand-red)]">
+                    {Math.round(
+                      results.faultMeters.reduce((s, m) => s + m.missedByManual, 0),
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[9px] font-bold uppercase tracking-wider text-white/60">
+                    Prevented/mo
+                  </div>
+                  <div className="font-mono text-lg font-extrabold text-[var(--brand-green-bright)]">
                     {Math.round(results.preventedFaultsPerMonth)}
                   </div>
                 </div>
                 <div>
-                  <div className="text-[10px] uppercase tracking-wider text-white/60">
-                    RoA gain / yr
+                  <div className="text-[9px] font-bold uppercase tracking-wider text-white/60">
+                    RoA gain/yr
                   </div>
-                  <div className="font-mono text-lg font-bold">
+                  <div className="font-mono text-sm font-extrabold text-white">
                     {formatINR(results.annualRoaGain, { compact: true })}
                   </div>
                 </div>
               </div>
+
+              <button
+                type="button"
+                onClick={resetFaultDetection}
+                className="mt-4 w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-[11px] font-semibold text-white/80 transition hover:bg-white/10"
+              >
+                Reset to industry baseline
+              </button>
+            </div>
+          </div>
+
+          {/* SoH Portfolio strip */}
+          <div className="mt-10 overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl">
+            <div className="flex flex-col items-start justify-between gap-4 border-b border-white/10 p-5 md:flex-row md:items-center">
+              <div>
+                <div className="text-xs font-bold uppercase tracking-wider text-[var(--brand-green-bright)]">
+                  Battery Performance — State of Health
+                </div>
+                <p className="text-sm text-white/70">
+                  What a Chargeup Battery Passport reveals across your{" "}
+                  {inputs.totalBatteries.toLocaleString("en-IN")}-unit fleet.
+                </p>
+              </div>
+              <div className="text-xs text-white/60">
+                Without IoT, you don't know which bucket each battery is in.
+              </div>
+            </div>
+            <div className="grid divide-y divide-white/10 md:grid-cols-3 md:divide-x md:divide-y-0">
+              {[
+                { label: "Healthy SoH", range: ">95%", count: results.sohSplit.healthy, pct: 56, color: "var(--brand-green-bright)" },
+                { label: "Moderate SoH", range: "85–95%", count: results.sohSplit.moderate, pct: 27, color: "var(--brand-amber)" },
+                { label: "At Risk", range: "<85%", count: results.sohSplit.atRisk, pct: 17, color: "var(--brand-red)" },
+              ].map((s) => (
+                <div key={s.label} className="p-5">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: s.color }} />
+                    <span className="text-sm font-bold text-white">{s.label}</span>
+                    <span className="text-xs text-white/60">({s.range})</span>
+                  </div>
+                  <div className="mt-2 flex items-baseline gap-2">
+                    <span className="font-mono text-3xl font-extrabold text-white">
+                      {s.count.toLocaleString("en-IN")}
+                    </span>
+                    <span className="text-sm text-white/60">{s.pct}%</span>
+                  </div>
+                  <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
+                    <div className="h-full rounded-full" style={{ width: `${s.pct}%`, backgroundColor: s.color }} />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
