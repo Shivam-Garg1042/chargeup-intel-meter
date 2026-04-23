@@ -174,19 +174,7 @@ function MetricCard({
   );
 }
 
-function MasterIntelGauge({
-  score,
-  label,
-  color,
-  faults,
-  missed,
-}: {
-  score: number;
-  label: string;
-  color: string;
-  faults: number;
-  missed: number;
-}) {
+function NeedleGauge({ score }: { score: number }) {
   // Needle rotates from -90deg (score 0) to +90deg (score 100)
   const angle = -90 + (Math.min(100, Math.max(0, score)) / 100) * 180;
   const spring = useSpring(angle, { stiffness: 60, damping: 14 });
@@ -207,71 +195,24 @@ function MasterIntelGauge({
   };
 
   return (
-    <div className="rounded-2xl border border-[var(--brand-navy)]/10 bg-gradient-to-br from-card to-secondary/40 p-5 shadow-card">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="text-xs font-bold uppercase tracking-wider text-[var(--brand-navy)]">
-            Master Intel Meter
-          </div>
-          <div className="text-[11px] text-muted-foreground">
-            Live • {faults} fault classes tracked
-          </div>
-        </div>
-        <Activity className="h-4 w-4 text-[var(--brand-green)]" />
-      </div>
+    <div className="relative mx-auto mt-4 w-full max-w-[320px]">
+      <svg viewBox="0 0 200 130" className="h-auto w-full">
+        <path d={arcPath(-90, 90)} stroke="rgba(255,255,255,0.1)" strokeWidth="14" fill="none" strokeLinecap="round" />
+        <path d={arcPath(-90, -30)} stroke="var(--brand-red)" strokeWidth="14" fill="none" strokeLinecap="round" opacity="0.95" />
+        <path d={arcPath(-30, 30)} stroke="var(--brand-amber)" strokeWidth="14" fill="none" strokeLinecap="round" opacity="0.95" />
+        <path d={arcPath(30, 90)} stroke="var(--brand-green-bright)" strokeWidth="14" fill="none" strokeLinecap="round" opacity="0.95" />
 
-      <div className="relative mx-auto mt-3 w-full max-w-[280px]">
-        <svg viewBox="0 0 200 130" className="h-auto w-full">
-          <path d={arcPath(-90, 90)} stroke="oklch(0.92 0.015 220)" strokeWidth="14" fill="none" strokeLinecap="round" />
-          <path d={arcPath(-90, -30)} stroke="var(--brand-red)" strokeWidth="14" fill="none" strokeLinecap="round" opacity="0.85" />
-          <path d={arcPath(-30, 30)} stroke="var(--brand-amber)" strokeWidth="14" fill="none" strokeLinecap="round" opacity="0.85" />
-          <path d={arcPath(30, 90)} stroke="var(--brand-green)" strokeWidth="14" fill="none" strokeLinecap="round" opacity="0.9" />
+        <text x="14" y="125" fontSize="9" fontFamily="monospace" fill="rgba(255,255,255,0.6)">0</text>
+        <text x="92" y="20" fontSize="9" fontFamily="monospace" fill="rgba(255,255,255,0.6)">50</text>
+        <text x="172" y="125" fontSize="9" fontFamily="monospace" fill="rgba(255,255,255,0.6)">100</text>
 
-          <text x="14" y="125" fontSize="9" fontFamily="monospace" fill="oklch(0.5 0.03 240)">0</text>
-          <text x="92" y="20" fontSize="9" fontFamily="monospace" fill="oklch(0.5 0.03 240)">50</text>
-          <text x="172" y="125" fontSize="9" fontFamily="monospace" fill="oklch(0.5 0.03 240)">100</text>
-
-          {/* Needle (rotates around hub at 100,110) */}
-          <motion.g style={{ originX: "100px", originY: "110px", rotate }}>
-            <line x1="100" y1="110" x2="100" y2="32" stroke="var(--brand-navy-deep)" strokeWidth="2.5" strokeLinecap="round" />
-            <polygon points="100,28 96,38 104,38" fill="var(--brand-red)" />
-          </motion.g>
-          <circle cx="100" cy="110" r="7" fill="var(--brand-navy)" />
-          <circle cx="100" cy="110" r="3" fill="var(--brand-green-bright)" />
-        </svg>
-      </div>
-
-      <div className="mt-1 text-center">
-        <AnimatedNumber
-          value={score}
-          format={(v) => Math.round(v).toString()}
-          className="font-mono text-4xl font-extrabold text-foreground"
-        />
-        <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-          / 100 Intel Index
-        </div>
-        <div
-          className="mt-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold text-white"
-          style={{ backgroundColor: color }}
-        >
-          {label}
-        </div>
-      </div>
-
-      <div className="mt-4 grid grid-cols-2 gap-2 border-t border-border pt-3 text-center">
-        <div>
-          <div className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
-            Faults missed / mo
-          </div>
-          <div className="font-mono text-lg font-extrabold text-[var(--brand-red)]">{missed}</div>
-        </div>
-        <div>
-          <div className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
-            With Chargeup
-          </div>
-          <div className="font-mono text-lg font-extrabold text-[var(--brand-green)]">0</div>
-        </div>
-      </div>
+        <motion.g style={{ originX: "100px", originY: "110px", rotate }}>
+          <line x1="100" y1="110" x2="100" y2="32" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+          <polygon points="100,28 96,38 104,38" fill="var(--brand-green-bright)" />
+        </motion.g>
+        <circle cx="100" cy="110" r="8" fill="white" />
+        <circle cx="100" cy="110" r="4" fill="var(--brand-navy-deep)" />
+      </svg>
     </div>
   );
 }
