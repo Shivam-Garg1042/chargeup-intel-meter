@@ -63,11 +63,12 @@ export interface CalcResults {
 
   // Fault Intelligence Mini-Meters (what Chargeup IoT detects that manual ops misses)
   faultMeters: {
-    key: string;
+    key: FaultKey;
     label: string;
     sublabel?: string;
     detected: number; // count per month detected by Chargeup IoT
     missedByManual: number; // count per month invisible to manual ops
+    manualDetectionPct: number; // 0..100 — current manual detection % (user-tunable)
     valueAtRisk: number; // monthly INR exposure
   }[];
 
