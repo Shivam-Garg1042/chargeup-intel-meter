@@ -224,6 +224,15 @@ export default function IntelMeter() {
   const update = <K extends keyof CalcInputs>(key: K, value: CalcInputs[K]) =>
     setInputs((p) => ({ ...p, [key]: value }));
 
+  const updateFaultDetection = (key: FaultKey, pct: number) =>
+    setInputs((p) => ({
+      ...p,
+      faultManualDetectionPct: { ...(p.faultManualDetectionPct ?? {}), [key]: pct },
+    }));
+
+  const resetFaultDetection = () =>
+    setInputs((p) => ({ ...p, faultManualDetectionPct: undefined }));
+
   const tierColor =
     results.intelTier === "leader"
       ? "var(--brand-green)"
