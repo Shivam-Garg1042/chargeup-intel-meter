@@ -203,6 +203,9 @@ export default function IntelMeter() {
             <a href="#breakdown" className="hover:text-[var(--brand-green)]">
               Loss Breakdown
             </a>
+            <a href="#faults" className="hover:text-[var(--brand-green)]">
+              Fault Intel
+            </a>
             <a href="#index" className="hover:text-[var(--brand-green)]">
               Intel Index
             </a>
